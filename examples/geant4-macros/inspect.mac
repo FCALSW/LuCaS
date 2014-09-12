@@ -1,0 +1,11 @@
+/vis/open OGLIX 800x800-0+0
+/vis/drawVolume CentralPipe
+/vis/viewer/set/upVector 1 0 0
+/vis/viewer/set/viewpointVector 0 1 0
+/vis/viewer/set/sectionPlane on 0 0 0 mm 0 1
+/vis/viewer/panTo 2500 100 mm 
+/vis/scene/add/volume Endcap1
+/vis/scene/add/volume EndPipe1
+/vis/scene/add/volume Endcap2
+/vis/scene/add/volume EndPipe2
+/vis/viewer/zoomTo 40

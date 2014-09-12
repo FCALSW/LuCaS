@@ -1,0 +1,13 @@
+#
+# macro to draw section in x-z plane of Forward
+# calorimetry system
+#
+/vis/open OGLIX 800x800-0+0
+/vis/geometry/set/forceWireframe World -1 true     
+/vis/viewer/set/viewpointThetaPhi 20 35 deg
+/vis/viewer/set/upVector 1 0 0
+/vis/viewer/set/sectionPlane on 0 0 0 mm 0 1 0
+/vis/viewer/panTo 3680 0 mm                   
+/vis/viewer/zoomTo 40
+/vis/drawVolume 
+#

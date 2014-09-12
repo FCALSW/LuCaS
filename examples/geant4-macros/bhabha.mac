@@ -1,0 +1,9 @@
+#  batch  mode macro
+#
+#/control/verbose 2
+#/run/verbose 1
+#
+/generator/generator bhabha.HEPEvt
+#/generator/generator pairs0000.HEPEvt
+/generator/info
+/run/beamOn 100

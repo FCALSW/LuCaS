@@ -1,0 +1,6 @@
+/vis/open OGLIX 600x600-0+0
+/vis/drawVolume Layer1
+/vis/viewer/set/viewpointVector 1 0 0
+/vis/viewer/set/sectionPlane on 0 0 0 mm 1 0 0 
+/vis/viewer/panTo 0 195 mm
+/vis/viewer/zoomTo 75

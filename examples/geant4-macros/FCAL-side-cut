@@ -1,0 +1,38 @@
+#
+#-------------------------------------------------
+# created : 06.06.2009   B.P.
+#-------------------------------------------------
+#  macro to draw front view of a single LCAL layer
+#  assumes OGLIX open already
+#
+# logical volumes in FCAL tree :
+#   - logicCentralTube
+#   - logicLCalFrntTubeWall
+#   - logicBCalFrntTubeWall
+#   - logicBeamOutTube
+#   - logicBeamInTube
+#   - logicWholeLC :
+#   - logicLHcal
+#   - logicBCal
+#   - logicMask
+#-------------------------------------
+#/vis/open OGLIX 600x600-0+0
+/vis/geometry/set/daughtersInvisible logicTile 0 0
+/vis/geometry/set/forceWireframe logicCentralTube 0 1      
+/vis/geometry/set/forceWireframe logicLCalFrntTubeWall 0 1      
+/vis/geometry/set/forceWireframe logicLCalInnerTube 0 1      
+/vis/geometry/set/forceWireframe logicBCalFrntTubeWall 0 1      
+/vis/geometry/set/forceWireframe logicBeamOutTube 0 1      
+/vis/geometry/set/forceWireframe logicBeamInTube 0 1
+/vis/geometry/set/forceWireframe logicWholeLC -1 1      
+/vis/geometry/set/forceWireframe logicLHcal 0 1      
+/vis/geometry/set/forceWireframe logicBCal -1 1      
+/vis/geometry/set/forceWireframe logicMask  0 1      
+      
+/vis/viewer/set/upVector 1 0  
+/vis/viewer/set/sectionPlane on 0 0 0 mm 0 -1 0 
+/vis/viewer/panTo 3100 0 mm
+/vis/viewer/scaleTo 7 10 1
+/vis/drawVolume 
+
+

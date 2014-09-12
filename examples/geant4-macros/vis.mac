@@ -1,0 +1,50 @@
+# Set a default level of verbosity
+# verbose 1 writes out the macro controls, 
+# verbose 2 writes out the comments too
+#
+#/control/verbose 1
+/run/verbose 2
+#
+# Create a scene handler for a specific graphics system.
+#
+/vis/open OGLIX 800x800-0+0
+#
+# run Fukui reeneder 
+#/vis/open DAWNFILE
+#
+# draw stuff
+# 
+/vis/drawVolume
+/vis/viewer/zoomTo 1.5
+#
+/vis/viewer/set/viewpointThetaPhi 35 35 deg
+#
+/vis/scene/add/trajectories smooth
+/vis/scene/add/axes 0  0 0 1000 mm
+/vis/scene/add/text 1000     0    0  mm  16 0 0 X
+/vis/scene/add/text 0     1000    0  mm  16 0 0 Y
+/vis/scene/add/text 0        0 1000  mm  16 0 0 Z
+
+# for drawing tracks
+/vis/scene/add/trajectories smooth
+# 
+# (if too many tracks cause a core dump => /tracking/storeTrajectory 0)
+#
+# for drawing the hits, uncomment the next line
+/vis/scene/add/hits
+#
+# (if you prefer refreshing each event, comment out the next line)
+#/vis/scene/endOfEventAction accumulate
+#
+#/generator/generator bhabha.HEPEvt
+/generator/generator pairs.0001.HEPEvt
+#/generator/generator particleGun
+#/gun/particle e-
+#/gun/energy 250 GeV
+#/gun/position 0.  0.  0. mm
+#/gun/direction 0. 0.053 1.
+#/gun/directionSmearingMode uniform
+#/gun/thetaSmearing  0.021 rad
+#/gun/phiSmearing 0.015 rad 
+/generator/info
+/run/beamOn 1

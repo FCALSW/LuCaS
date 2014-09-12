@@ -1,0 +1,17 @@
+/vis/open OGLIX 800x800-0+0
+/vis/viewer/set/viewpointThetaPhi 35 35 deg
+/vis/geometry/set/visibility logicWholeLC  0  0
+/vis/geometry/set/daughtersInvisible logicTile 0 0
+/vis/geometry/set/daughtersInvisible logicSector1 0 0
+/vis/geometry/set/daughtersInvisible logicSector2 0 0
+/vis/geometry/set/daughtersInvisible logicSector4 0 0
+/vis/geometry/set/lineWidth logicTile 0 3
+/vis/geometry/set/colour     logicFEChip 0 0.3 0.2 0.5  
+/vis/geometry/set/forceSolid logicMechLay -1 1
+/vis/geometry/set/forceSolid logicAbsorber 0 1
+/vis/geometry/set/forceSolid logicFEChip 0 1     
+/vis/geometry/set/forceWireframe logicFanoutFront 0 1 
+/vis/geometry/set/forceSolid logicFanoutBack 0 1 
+/vis/geometry/set/forceWireframe logicCell 0 1      
+/vis/geometry/set/forceWireframe logicSensor 0 1
+/vis/drawVolume LumiCalDetector1

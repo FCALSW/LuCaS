@@ -1,0 +1,26 @@
+#-------------------------------------------------
+# created : 03.06.2009   B.P.
+#-------------------------------------------------
+#  macro to draw front view of a single LCAL layer
+#  assumes OGLIX open already
+#
+# logical volumes tree :
+#     logicSensor :
+#             - logicTile :
+#                    - logicSector1 
+#                    - logicSector2 
+#                    - logicSector4 :
+#                              - logicCell
+#-------------------------------------
+#        
+/vis/open OGLIX 600x600-0+0
+/vis/geometry/set/forceLineSegmentsPerCircle logicSensor -1 96
+/vis/geometry/set/lineWidth logicTile 0 4
+/vis/geometry/set/daughtersInvisible logicTile 0 0
+/vis/geometry/set/daughtersInvisible logicSector1 0 0
+/vis/geometry/set/daughtersInvisible logicSector2 0 0
+/vis/geometry/set/daughtersInvisible logicSector4 0 0
+/vis/geometry/set/forceWireframe logicTile 0 1
+/vis/geometry/set/forceWireframe logicCell 0 1      
+/vis/drawVolume Tile
+

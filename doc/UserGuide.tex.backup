@@ -1,0 +1,94 @@
+\documentclass[10pt,notitlepage,twoside,a4paper]{scrartcl}
+%
+\include{headers}
+%
+
+\date{2010-11-25}
+
+\begin{document}
+ \include{title}
+ \tableofcontents
+ \newpage
+ \section{Introduction}
+\par The LumiCal Simulation [{\bfseries LuCaS}] package is easy to use {\bf GEANT4} based application devoted for simulation of LumiCal (the luminosity monitor for ILD). Entire FCAL ( Forward Calorimetry ) detectors of ILD ( LumiCal, LHCAL, BCAL beam pipe and mask ) are build, but only LumiCal is set to be sensitive detector ({\it i.e.} hits are stored in the output file).
+\newpage
+
+ \section{Installation}\label{instal}
+The LuCaS package need $Geant4$ and ROOT packages to be installed on the system.
+After unpacking tarball, move to the directory LUMICAL
+\begin{itemize}
+ \item $>$cd LUMICAL
+\end{itemize}
+
+then inspect file setup.csh ( setup.sh if you are working with bash )
+and make appropriate to your environment changes. Particulary specify location where Geant4 and ROOT
+packgages are installed. Execute:
+\begin{itemize}
+\item $>$ source  setup.csh ( or if you are running bash  $>$. setup.sh )
+\item $>$ gmake
+\end{itemize}
+
+this ( if succesfull ) will create {\bfseries{./bin/$<$OS-SYSTEM$>$}} directory where the {\bfseries{Lucas}} executable will be placed.
+Now you are ready to run the program. For convinience you may want add the path to {\bfseries{Lucas}} location in to your {\bfseries PATH} environment variable.
+\newpage
+ \section{Using LuCaS}\label{use}
+If everything went O.K. now you can start the Lucas with default confinguration in the interactive mode executing command :\\
+{\bf {$>$ Lucas -i }}\\
+One may want to inspect {\bf {./geant4-macros}} directory to see available visualisation macros.
+ \subsection{Command line parameters}\label{params}
+Full list of available command line parametrs can obtained with command:\\
+{\bf {$> $Lucas -h}}\\
+this will print on your screen :\\
+\begin{verbatim}
+Usage:          Lucas [options]
+
+
+-h              print this help message and exit
+-b              batch mode
+-i              interactive mode (default)
+
+-m <filename>   specifies a macro file to be executed before running
+                (default none)
+
+-o <filename>   specifies file name for ROOT output.No default
+-M <mode>       specifies ROOT file opening mode ( default is NEW
+                to avoid accidental file overwriting
+                Possible values are RECREATE/UPDATE
+-A              accumulate events from entire Run are to be
+                written in one event ( suitable only for beam background data )
+
+-c <double>     specifies the Geant 4 production range cut in mm 
+                (default is 0.005 mm)
+-x <double>     specifies the Beam Crossing Angle in mrad
+                (default is 0 [mrad])
+-s <filename>   specifies name of the file with geometry setup
+-P <int>        specifies printout level ( default is 0= minimum
+                                                      3= debug printout
+\end{verbatim}
+
+\newpage
+ \subsection{Steering file parameters}\label{steer}
+
+\begin{table}[http]\label{lcalpars}
+\begin{center}
+\begin{tabular}{lrl}
+\hline
+ Parameter name & Default value &  Description \\
+\hline
+\bf{Lcal\_z\_end}       & 2635.0 mm & defines distance of LumiCal from IP\\
+\bf{Lcal\_inner\_radius}&   76.0 mm & absorber inner radius \\
+\bf{Lcal\_outer\_radius}& 197.2 mm  & absorber outer radius\\
+\bf{Lcal\_SensRadMin}   &  80.0 mm  & silicon sensor inner radius\\
+\bf{Lcal\_SensRadMax}   & 195.2 mm  & silicon sensor outer radius\\
+\bf{Lcal\_n\_layers}    &       30  & number of detector planes\\
+\bf{Lcal\_n\_tiles}     &       12  & number of in one sensor plane\\
+\bf{Lcal\_n\_sectors}   &       48  & number of azimuthal divisions\\
+\bf{Lcal\_n\_rings}     &       64  & number of radial divisions\\
+\bf{Lcal\_virtual\_cells}& 1 & virtual cells are used instead building physical one 
+\end{tabular}
+\caption{Full list of Lucas geometry control parameters.}
+\end{center}
+\end{table}
+ \subsection{Accessing output tree}\label{treeacces}
+
+\end{document}

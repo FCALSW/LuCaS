@@ -1,0 +1,36 @@
+#
+#-------------------------------------------------
+# created : 03.06.2009   B.P.
+#-------------------------------------------------
+#  macro to draw front view of a single LCAL layer
+#  assumes OGLIX open already
+#
+# logical volumes in Layer tree :
+#   - logicMechLayer :
+#                    - logicEarsBase
+#                    - logicEar
+#                    - logicBolt
+#   - logicLayer
+#   - logicAbsorber
+#   - logicFanoutFront
+#   - logicFanoutBack
+#   - logicFEChip
+#   - logicSensor :
+#         - logicTile:
+#                 - logicSector1
+#                 - logicSector2
+#                 - logicSector4
+#                 - logicCell
+#-------------------------------------
+/vis/open OGLIX 600x600-0+0
+/vis/geometry/set/visibility logicWholeLC 0 0
+/vis/geometry/set/daughtersInvisible logicTile 0 0
+/vis/geometry/set/daughtersInvisible logicSector1 0 
+/vis/geometry/set/daughtersInvisible logicSector2 0 
+/vis/geometry/set/daughtersInvisible logicSector4 0 
+/vis/geometry/set/forceWireframe logicCell 0 1      
+/vis/geometry/set/forceWireframe logicMechLay 0 1      
+/vis/viewer/set/sectionPlane on  80 0 0 mm 1 0 0 
+/vis/viewer/panTo -50 150  mm
+/vis/viewer/scaleTo 20 3 1
+/vis/drawVolume LumiCalDetector1

@@ -1,0 +1,9 @@
+#
+# macro to disable drawing gammas 
+# trajectories ( filtering model )
+#
+/vis/filtering/trajectories/create/particleFilter 
+/vis/filtering/trajectories/particleFilter-0/add gamma
+/vis/filtering/trajectories/particleFilter-0/invert true
+/vis/filtering/trajectories/particleFilter-0/active false    
+#

@@ -1,0 +1,197 @@
+%===============================================================================================================
+% packages , commands etc.
+%===============================================================================================================
+%\documentclass[10pt, a4paper]{scrartcl}
+
+% fancyhdr package
+%---------------------------------------------------------------------------------------------------------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+% with this we ensure that the chapter and section
+% headings are in lowercase.
+%\renewcommand{\chaptermark}[1]{%
+%\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{%
+\markright{\thesection\ #1}}
+\fancyhf{} % delete current header and footer
+\fancyhead[LE,RO]{\bfseries\thepage}
+
+% etra line for a DRAFT warning at the bottom
+%\fancyfoot[CE,CO]{\textcolor{BlueViolet}{I.Sadeh \textbf{DRAFT} - \today}}
+
+\fancyhead[LO]{\bfseries\rightmark}
+\fancyhead[RE]{\bfseries\leftmark}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+\addtolength{\headheight}{1.5pt} % space for the rule
+\fancypagestyle{plain}{%
+\fancyhead{} % get rid of headers on plain pages
+\renewcommand{\headrulewidth}{0pt} % and the line
+}
+
+% in order to avoid any miss-haps when converting from dvi to pdf
+\setlength{\topmargin}{0.3in}  \setlength{\headheight}{0.2in}
+
+
+% included packages
+%---------------------------------------------------------------------------------------------------------------
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{makeidx}
+\usepackage[dvips,dvipsnames,usenames]{color}
+
+% choose draft to compile without the figures
+%\usepackage[draft,dvips]{graphicx}
+\usepackage{graphicx}
+
+\usepackage{varioref}
+
+\usepackage{multirow}
+\setlength{\headheight}{0in}
+\usepackage{epsfig}
+\usepackage{rotating}
+\parskip=.1in
+\usepackage{colortbl}
+
+%\usepackage[nodayofweek]{datetime}
+%\usepackage[first,light]{draftcopy}
+
+\usepackage{mathrsfs}
+% changes the shape of calligraphy fonts that are called by the command $\mathcal{A B C}$
+\usepackage{eucal}
+% nice calligraphy fonts: \usepackage{mathrsfs}
+
+\usepackage{amsmath,amssymb}
+
+
+% subfig and hyperref
+%---------------------------------------------------------------------------------------------------------------
+\usepackage{caption}
+\usepackage{keyval}
+\usepackage{subfig}
+
+\newcommand{\Subref}[1]{\protect\subref{#1}}
+
+% only a few drivers support automatically wrapped/broken links, e.g. pdftex, dvipdfm, hypertex. Other drivers lack this feature, e.g. dvips, dvipsone.   for using dvips one must place \usepackage{breakurl} after the hyperref package
+\usepackage[dvips, breaklinks={true}, bookmarks, colorlinks={true}, pdfpagemode=UseNON, pdffitwindow=true, pdfstartview={FitH}, linkcolor={Blue}, menucolor={Blue}, citecolor={Red}, filecolor={OliveGreen}, urlcolor={MidnightBlue}, pdftitle={LuCaS User Guide}, pdfauthor={Bogdan Pawlik}, pdfsubject={LUCAS - UserGuide}, pdfkeywords={}]{hyperref}
+
+\usepackage{breakurl}
+
+\usepackage[all]{hypcap}
+
+\labelformat{equation}{\textup{(#1)}}
+\labelformat{enumi}{\textup{(#1)}}
+
+% \Autoref is for the beginning of the sentence
+\let\orgautoref\autoref
+\providecommand{\Autoref}
+        {\def\equationautorefname{Equation}%
+         \def\figureautorefname{Figure}%
+         \def\subfigureautorefname{Figure}%
+         \def\sectionautorefname{Section}%
+         \def\subsectionautorefname{Section}%
+         \def\subsubsectionautorefname{Section}%
+         \def\Itemautorefname{Item}%
+         \def\tableautorefname{Table}%
+         \orgautoref}
+
+% \Autorefs is plural for the beginning of the sentence
+\providecommand{\Autorefs}
+        {\def\equationautorefname{Equations}%
+         \def\figureautorefname{Figures}%
+         \def\subfigureautorefname{Figures}%
+         \def\sectionautorefname{Sections}%
+         \def\subsectionautorefname{Sections}%
+         \def\subsubsectionautorefname{Sections}%
+         \def\Itemautorefname{Items}%
+         \def\tableautorefname{Tables}%
+         \orgautoref}
+
+% \autoref is used inside a sentence 
+% (this is a renew of the standard)
+\renewcommand{\autoref}
+        {\def\equationautorefname{Eq.}%
+         \def\figureautorefname{Fig.}%
+         \def\subfigureautorefname{Fig.}%
+         \def\sectionautorefname{Sect.}%
+         \def\subsectionautorefname{Sect.}%
+         \def\subsubsectionautorefname{Sect.}%
+         \def\Itemautorefname{item}%
+         \def\tableautorefname{Table}%
+         \orgautoref}
+
+% \autorefs is plural for inside a sentence
+\providecommand{\autorefs}
+        {\def\equationautorefname{Eqs.}%
+         \def\figureautorefname{Figs.}%
+         \def\subfigureautorefname{Figs.}%
+         \def\sectionautorefname{Sects.}%
+         \def\subsectionautorefname{Sects.}%
+         \def\subsubsectionautorefname{Sects.}%
+         \def\Itemautorefname{items}%
+         \def\tableautorefname{Tables}%
+         \orgautoref}
+
+
+
+% a footnote you can refer to multiple times
+%---------------------------------------------------------------------------------------------------------------
+\newcommand{\footnoteremember}[2]{
+
+  \footnote{#2}
+  \newcounter{#1}
+  \setcounter{#1}{\value{footnote}}
+
+} \newcommand{\footnoterecall}[1]{
+
+  \footnotemark[\value{#1}]
+
+}
+
+
+
+
+
+% new commands
+%---------------------------------------------------------------------------------------------------------------
+\newcommand{\remark}[1] {\textbf{\textcolor{Mahogany}{$\rightarrow$#1$\leftarrow$}}}
+
+\newcommand{\ps}[1] {\textcolor{OliveGreen}{ ( \underline{$\mathcal{PS}$:} \sc{#1} ) }}
+%\newcommand{\ps}[1]{~}
+
+%\newcommand{\Label}[1] {\label{#1} \textcolor{BurntOrange}{(#1)}}
+%\newcommand{\Label}[1]{\label{#1}}
+
+%\newcommand{\Cite}[1] {\cite{#1} \textcolor{blue}{(#1)}}
+%\newcommand{\Cite}[1] {\cite{#1}}
+
+\newcommand{\abs}[1] {\lvert #1 \lvert}
+
+\newcommand{\mc}[1]{\mathcal{#1}}
+
+% renew commands
+%--------------------------------------------------------------------------------------------------------------
+\renewcommand{\thefootnote}{\,\Roman{footnote}\,}
+%\renewcommand{\thefootnote}{\fnsymbol{footnote}\,}
+
+
+\renewcommand{\vec}[1]{\boldsymbol{#1}}
+
+% re-set table row heigt
+\renewcommand\arraystretch{1.5}
+
+% overide the include graphics command to prevent the plots from being included
+%\renewcommand\includegraphics[1][]{\textcolor{green}{filePath:~}}
+%---------------------------------------------------------------------------------------------------------------
+
+
+% prevent latex from EVER splitting up inline formulas.  this flag is from 1 to 10000.
+% THIS CAN BE DANGEROUS !!!  :)
+% rel -> penalty for splitting inline equation after relation operator
+% bin -> penalty for splitting inline equation after binary operator
+\relpenalty=9999
+\binoppenalty=9999
+
+%---------------------------------------------------------------------------------------------------------------

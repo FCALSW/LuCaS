@@ -1,0 +1,26 @@
+% title etc.
+%---------------------------------------------------------------------------------------------------------------
+
+
+\subject{\includegraphics[bb=0 0 179 200,scale=0.7]{img/single-electron.jpg}}
+
+
+\title{\Large{Requirements on the Readout \\ of the Luminosity Calorimeter}} 
+
+\author{\normalsize {B.~Pawlik \thanks{Institute of Nuclear Physics PAN, Cracow, Poland}~, ~I.~Sadeh \thanks{School of Physics and Astronomy, The Raymond and Beverly Sackler Faculty of Exact Sciences, Tel Aviv University, Tel Aviv Israel.}}}
+
+\date{\normalsize{On behalf of the FCAL collaboration \thanks{List of members can be found at: http://www-zeuthen.desy.de/ILC/fcal/} \linebreak  \linebreak May 2008}}
+
+
+\maketitle \thispagestyle{empty}
+
+% abstract
+%---------------------------------------------------------------------------------------------------------------
+\vspace{-30pt}
+\begin{abstract}
+
+\noindent \ps{something here...}
+
+\end{abstract}
+
+

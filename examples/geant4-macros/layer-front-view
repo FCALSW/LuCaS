@@ -1,0 +1,44 @@
+#-------------------------------------------------
+# created : 03.06.2009   B.P.
+#-------------------------------------------------
+#  macro to draw front view of a single LCAL layer
+#  assumes OGLIX open already
+#
+# logical volumes in Layer tree :
+# logical volumes in Layer tree :
+#   - logicMechLayer :
+#                    - logicPCB
+#                    - logicFEChip
+#                    - logicEarsBase
+#                    - logicEar
+#                    - logicBolt
+#   - logicLayer
+#   - logicAbsorber
+#   - logicFanoutFront
+#   - logicFanoutBack
+#   - logicFEChip
+#   - logicSensor :
+#                 - logicSector1,2,4
+#                 - logicCell
+#-------------------------------------
+#        
+/vis/open OGLIX 600x600-0+0
+/vis/geometry/set/forceLineSegmentsPerCircle logicMechLay -1 96
+/vis/geometry/set/forceLineSegmentsPerCircle logicLayer -1 96
+/vis/geometry/set/daughtersInvisible logicSensor  0 0
+/vis/geometry/set/daughtersInvisible logicSector1 0 0
+/vis/geometry/set/daughtersInvisible logicSector2 0 0
+/vis/geometry/set/daughtersInvisible logicSector4 0 0
+/vis/geometry/set/forceSolid logicSector1 0 1
+/vis/geometry/set/colour     logicFEChip 0 0.3 0.2 0.5
+/vis/geometry/set/forceSolid logicMechLay -1 1
+/vis/geometry/set/forceSolid logicAbsorber 0 1
+/vis/geometry/set/forceSolid logicFEChip 0 1
+/vis/geometry/set/forceSolid logicFanoutBack 0 1 
+/vis/geometry/set/visibility logicCell 0 1      
+/vis/geometry/set/forceWireframe logicCell 0 1      
+/vis/geometry/set/forceWireframe logicSensor 0 1
+/vis/drawVolume Layer1
+/vis/scene/add/volume MechLayer 0
+/vis/scene/add/axes 0. 0. 0. 250. mm
+/vis/viewer/zoomTo 5

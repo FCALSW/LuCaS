@@ -1,0 +1,13 @@
+/vis/open OGLIX 700x700-0+0
+/vis/viewer/set/upVector 1 0 0
+/vis/viewer/set/cutawayMode add
+/vis/viewer/addCutawayPlane 0 0 0 mm 0 1 0
+/vis/viewer/set/viewpointThetaPhi 35 -45 deg
+/vis/viewer/zoomTo 6          
+/vis/viewer/panTo 1600 1350 mm
+/vis/viewer/addCutawayPlane 0 0 0 mm -0.5 0.5 0
+/vis/drawVolume
+/vis/scene/add/axes 600 100 -3300 400 mm
+/vis/scene/add/text 1000 100 -3300 mm 24 0 0 X
+/vis/scene/add/text 600 500 -3300 mm 24 0 0 Y
+/vis/scene/add/text 600 100 -2900 mm 24 0 0 Z

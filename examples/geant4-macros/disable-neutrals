@@ -1,0 +1,10 @@
+#
+# macro to disable drawing neutral 
+# trajectories ( filtering model )
+#
+/vis/filtering/trajectories/create/chargeFilter 
+/vis/filtering/trajectories/chargeFilter-0/add 0
+/vis/filtering/trajectories/chargeFilter-0/reset true
+/vis/filtering/trajectories/chargeFilter-0/add 1     
+/vis/filtering/trajectories/chargeFilter-0/add -1
+#
