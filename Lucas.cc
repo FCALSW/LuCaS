@@ -6,7 +6,7 @@
 // Description : LumiCal stand-alone application for Geant4
 //============================================================================
 /*
- $Id$
+ $Id:$
 */
 
 // 
