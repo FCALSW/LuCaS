@@ -31,6 +31,7 @@
 
 // root classes:
 #include "TROOT.h"
+#include "TSystem.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1.h"

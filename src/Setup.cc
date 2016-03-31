@@ -1,3 +1,4 @@
+
 /*
  * class to setup initial parameters for Lcal geometry,
  * materials, and I/O.
@@ -22,6 +23,8 @@
 
 
 #include "Setup.hh"
+
+using namespace CLHEP;
 
 //
 // default values for all setup parameters

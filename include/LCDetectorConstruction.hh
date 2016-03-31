@@ -80,13 +80,13 @@ private:
     G4LogicalVolume     *logicFanoutBack;  // back fanout log vol
 
     // -------------- SENSOR
-  G4LogicalVolume     *logicSensor, *logicSensorV, *logicSensorEnv;    // Sensor logical volume
+    G4LogicalVolume     *logicSensor, *logicSensorV, *logicSensorEnv;    // Sensor logical volume
     // -------------- Metallization mother volume
-  G4LogicalVolume     *logicMetSec, *logicMetalV;   
+    G4LogicalVolume     *logicMetSec, *logicMetalV;   
     G4LogicalVolume     *MetSector1, *MetSector2, *MetSector4; 
 
     // -------------- SECTOR
-  G4LogicalVolume     *logicFESector, *logicChip, *logicPCB;    
+    G4LogicalVolume     *logicFESector, *logicChip, *logicPCB;    
     G4LogicalVolume     *logicSector1, *logicSector2, *logicSector4; 
     // 48 sectors per sensor; contains cells
 
@@ -223,8 +223,8 @@ public:
 
 public:
 
-virtual  void ComputeTransformation(const G4int repNo, G4VPhysicalVolume *physVol) const;
-virtual  void ComputeDimensions(G4Tubs &Cell, const G4int copyNo, const G4VPhysicalVolume* physvol) const;
+  void ComputeTransformation(const G4int repNo, G4VPhysicalVolume *physVol) const;
+  void ComputeDimensions(G4Tubs &Cell, const G4int copyNo, const G4VPhysicalVolume* physvol) const;
 
 private: // Dummy declarations to get rid of warnings
     void ComputeDimensions (G4Trd&,const G4int,const G4VPhysicalVolume*) const {}
@@ -233,6 +233,7 @@ private: // Dummy declarations to get rid of warnings
     void ComputeDimensions (G4Sphere&,const G4int,const G4VPhysicalVolume*) const {}
     void ComputeDimensions (G4Orb&,const G4int,const G4VPhysicalVolume*) const {}
     void ComputeDimensions (G4Torus&,const G4int,const G4VPhysicalVolume*) const {}
+    void ComputeDimensions(G4Ellipsoid &,const G4int, const G4VPhysicalVolume *) const {}
     void ComputeDimensions (G4Para&,const G4int,const G4VPhysicalVolume*) const {}
     void ComputeDimensions (G4Hype&,const G4int,const G4VPhysicalVolume*) const {}
     void ComputeDimensions (G4Box&,const G4int,const G4VPhysicalVolume*) const {}

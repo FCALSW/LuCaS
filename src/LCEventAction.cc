@@ -120,8 +120,8 @@ void LCEventAction::EndOfEventAction(const G4Event* event)
       evtleft  = (1. - evtleft)*100.;
       G4cout << G4endl;
       G4cout<<" LCEventAction::EndOfEventAction: "<<G4endl;
-      G4cout<<" Event number : "<<evtnum + Setup::EventStartNumber <<" - "<<evtleft<<"% done !"<<"  current time is: "<< ctime(&now);
-      G4cout<<"       time elapsed: "<<tdiff / s << "  time/event: "<< evtime/s <<"  EST: "<< EST/s << G4endl;
+      printf(" Event number : %d - %6.3f %% done ! Current time: %s \n", evtnum + Setup::EventStartNumber, evtleft,  ctime(&now)) ;
+      printf("       time elapsed: %10.1f ; time/evt %8.3f ; EST: %10.3f [sec]\n",tdiff/s, evtime/s, EST/s );
  
 	  }
       }

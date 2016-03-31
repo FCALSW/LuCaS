@@ -2,17 +2,21 @@
 #define rot0_hh
 //#define si500
 #include "reco.hh"
+#include <TSystem.h>
 #include <TF1.h>
+#include <TH1.h>
 #include <TH2.h>
 #include <TProfile.h>
 #include <TStyle.h>
 #include <TCanvas.h>
+#include <TFile.h>
+#include <TTree.h>
 
 void reco( Double_t dcut , Long64_t nwanted, TString fname )
 {
   // attache dictionaries before file
-	gROOT->ProcessLine(".L loadDict.C+");
-        TFile fin = TFile( fname );
+	gSystem->Load("./lib/libLucasDict.so");
+        TFile fin ( fname );
         TTree *Lcal = (TTree*)fin.Get("Lcal");
         if (Lcal == 0) return;
 	pTracks = 0; 
@@ -73,8 +77,8 @@ void reco( Double_t dcut , Long64_t nwanted, TString fname )
      dgap[ih] = new TH2D(nam4,"; distance from the gap [mm]; <E_{VIS}>/E_{VIS}",900,-45.,45.,100,0.5,1.5);
      Qmax[ih] = new TH1D(nam6,"; Q_{max}    pC; number of events ",40,0.,20.);
      //     dErec[ih]->SetBit(TH1::kCanRebin);
-     edep[ih]->SetBit(TH1::kCanRebin);
-    //   dphi[ih]->SetBit(TH1::kCanRebin);
+     //     edep[ih]->SetBit(TH1::kCanRebin);
+     //     dphi[ih]->SetBit(TH1::kCanRebin);
    }
    //
    //
@@ -255,6 +259,7 @@ void reco( Double_t dcut , Long64_t nwanted, TString fname )
   //
    //
    for ( int ih=0;ih<9;ih++){
+     if( edep[ih]->Integral() < 1. ) continue;
     cout<< " fitting " << ebeam[ih] << endl;
     edep[ih]->Fit("gaus","QW");
     edep[ih]->Write();
@@ -277,14 +282,12 @@ void reco( Double_t dcut , Long64_t nwanted, TString fname )
       err = sqrt(e1*e1/(mean*mean)+e2*e2/(rmse*rmse))*ratio; 
        rmseove->SetBinContent( binum[ih], ratio);
        rmseove->SetBinError( binum[ih],2.*err);
+   dErec[ih]->Fit("gaus","QW");
+   dErec[ih]->Write();
     }
    sigeove->Fit("res1");
    rmseove->Fit("res1");
    //
-   for( int ih=0; ih<9;ih++){
-   dErec[ih]->Fit("gaus","QW");
-   dErec[ih]->Write();
-   }
    //
    Double_t P0[9],P1[9],P2[9],P3[9];
    for ( int ih=0; ih<9; ih++){
@@ -295,6 +298,7 @@ void reco( Double_t dcut , Long64_t nwanted, TString fname )
    }
 
      for( int ih=0; ih<9; ih++){
+       if( dphi[ih]->Integral() < 1. ) continue;
      dphi[ih]->Fit("gaus","Q");
      dphi[ih]->Write();
      dtheta[ih]->Fit("gaus","Q");
@@ -334,5 +338,5 @@ void reco( Double_t dcut , Long64_t nwanted, TString fname )
      sigeove->Write();
      rmseove->Write();
    //
-     out->Close();
+     //    out->Close();
 }

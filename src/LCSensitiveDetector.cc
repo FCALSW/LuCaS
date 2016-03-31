@@ -1,4 +1,4 @@
-/*
+/* $Id$
  * LCSensitiveDetector.cc
  * 2ModLumiCal
  *
@@ -17,10 +17,10 @@
 
 
 LCSensitiveDetector::LCSensitiveDetector(G4String sdname,
-                                         G4double CalRhoMin,
-                                         G4double CalPhiOffset,
-                                         G4double cellDimRho,
-                                         G4double cellDimPhi,
+                                         G4double rhomin,
+                                         G4double PhiOffset,
+                                         G4double DimRho,
+                                         G4double DimPhi,
                                          G4int    nCellRho,
                                          G4int    nCellPhi,
                                          G4bool   cellvirtual)
@@ -28,6 +28,10 @@ LCSensitiveDetector::LCSensitiveDetector(G4String sdname,
       HCID(-1),
       SDName(sdname), // this sets string SDName to sdname
       hitsColl(0),
+      CalRhoMin( rhomin ),
+      CalPhiOffset( PhiOffset ),
+      cellDimRho( DimRho),
+      cellDimPhi( DimPhi ),
       VirtualCell( cellvirtual )
 {
     collName = SDName+"_HC"; // not dynamic - name becomes LumiCalSD_HC
@@ -35,12 +39,6 @@ LCSensitiveDetector::LCSensitiveDetector(G4String sdname,
     origin = G4ThreeVector();
     hitMap = new LCHitMap;
 
-    // set primary args - this is how you tell LCSensDet
-    // the geometric parameters of LumiCal
-		SetRhoMin(CalRhoMin);
-		SetPhiOffset(CalPhiOffset);
-		SetRhoCellDim(cellDimRho);
-		SetPhiCellDim( cellDimPhi);
 		SetNCellRho(nCellRho);
 		SetNCellPhi(nCellPhi);
    G4cout << "SD created <" << SDName << ">" << G4endl;
@@ -136,9 +134,9 @@ G4bool LCSensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *)
         // Use the touchable handle to get the volume hierarchy for the hit
         G4TouchableHandle theTouchable = preStepPoint->GetTouchableHandle();
             // Find the unique volume path for a cell which has a hit
-                // Which copy of LumiCal?
+                //  copy number of LumiCal
              LC_num     = theTouchable->GetHistory()->GetVolume(1)->GetCopyNo();
-                // Which layer inside LumiCal?
+                // layer inside LumiCal
              layer_num  = theTouchable->GetHistory()->GetVolume(2)->GetCopyNo();
 
 	    if ( !VirtualCell ){
@@ -166,10 +164,10 @@ G4bool LCSensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *)
 		  //		  G4cout <<"Local rho "<< rho << " phi " << phi /deg << G4endl;
 		  //
                   phi = ( phi < 0. ) ? phi + 2.* M_PI : phi; 
-                  cell_num   = (G4int)floor(( rho - (CalRhoMin-cellDimRho/2.) ) / cellDimRho );
-                  cell_num = ( cell_num < 0 ) ? 0 : cell_num; 
+                  sector_num = (G4int)floor ( phi / cellDimPhi );
+                  cell_num   = (G4int)floor(std::abs( rho - CalRhoMin ) / cellDimRho );
                   cell_num = ( cell_num >NumCellsRho  ) ? NumCellsRho : cell_num; 
-                  sector_num = (G4int)floor ( phi / cellDimPhi ) + 1;
+
 		  /* G4cout << "LCAL arm : " << LC_num 
                    << " Layer: "    << layer_num
                    << " Sector: "    << sector_num 
@@ -211,19 +209,16 @@ G4bool LCSensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *)
         //     the origin is at the center of the disk
         //     hence the position of the cell center in its coordinate system is
         //     given by:
-        G4ThreeVector localCellPos(CalRhoMin+((G4double)cell_num)*cellDimRho,
-                                   0. , 0. );
+      G4ThreeVector localCellPos(CalRhoMin+((G4double)cell_num)*cellDimRho,  0. , 0. );
        
 	if ( VirtualCell ) localCellPos.setPhi( (0.5000 + ((G4double)sector_num-1))*cellDimPhi );
-	else localCellPos.setPhi(0.5000 * cellDimPhi);
+	else               localCellPos.setPhi(0.5000 * cellDimPhi);
 	//
 	//		  G4cout << "LCP1 " << localCellPos << G4endl;
 	//
 
         // compute GlobalCellPos based on touchable with localCellPos
-        G4ThreeVector GlobalCellPos =
-                    theTouchable->GetHistory()->GetTopTransform().
-                        Inverse().TransformPoint(localCellPos);
+        G4ThreeVector GlobalCellPos = theTouchable->GetHistory()->GetTopTransform().Inverse().TransformPoint(localCellPos);
 	//
 	//		  G4cout << "GCP1 " << GlobalCellPos << G4endl;
 	//

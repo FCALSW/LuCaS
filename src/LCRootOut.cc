@@ -9,7 +9,7 @@
 #include "LCRootOut.hh"
 #include "Setup.hh"
 #include "LCDetectorConstruction.hh"
-#include "LucasDict.h"
+//#include "LucasDict.h"
 
 TFile *LCRootOut::pRootFile = NULL;
 
@@ -37,7 +37,7 @@ void LCRootOut::CreateNewTree()
     //
     // setup dictionary
     //
-    G__cpp_setup_globalLucasDict();
+    //G__cpp_setup_globalLucasDict();
     // 
 
     // create branches

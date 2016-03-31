@@ -5,7 +5,7 @@
 // *  polywww.in2p3.fr/geant4/tesla/www/mokka/mokka.html   *
 // *********************************************************
 //
-// $Id: InputFileGenerator.cc,v 1.4 2007/08/31 16:02:45 mora Exp $
+// $Id$
 // $Name: mokka-06-07-patch02 $
 
 #include "InputFileGenerator.hh"

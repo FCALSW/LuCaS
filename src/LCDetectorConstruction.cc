@@ -277,7 +277,7 @@ void LCDetectorConstruction::BuildTBeam(){
   G4double pcbhz = 1.238 *mm;
 
   G4Box *solidPCB = new G4Box ( "solidPCB", pcbhx, pcbhy, pcbhz );
-  G4LogicalVolume *logicPCB = new G4LogicalVolume (solidPCB, Setup::FR4, "logicPCB", 0, 0, 0);
+  logicPCB = new G4LogicalVolume (solidPCB, Setup::FR4, "logicPCB", 0, 0, 0);
   // copper surface on PCB
   G4double Cuhz = 0.019 *mm;
 
@@ -1110,7 +1110,7 @@ void LCDetectorConstruction::BuildBeamPipe()
     else BeamPipeVisAtt->SetForceWireframe(true);
  
     G4cout << " Building BeamPipe ..." << G4endl;
-	 G4double LcalToBeamTol = 1.*mm;
+    //	 G4double LcalToBeamTol = 1.*mm;  // this is set by Setup::Lcal_to_BeamPipe_clearance
          G4double zpl[6], rinner[6], router[6];
          G4double dzTol = 10. *mm;
 	 G4int numz = 6 ;
@@ -1169,12 +1169,12 @@ void LCDetectorConstruction::BuildBeamPipe()
          G4double dxshift = zpl[numz-1]*tan( rotAng );
 
 	 // temporary solid endcap
- 	 G4Tubs *solidtmp = new G4Tubs ( "solidtmp", 0., SensRadMax, hdz, startPhi, endPhi);
+ 	 G4Tubs *helper = new G4Tubs ( "helper", 0., SensRadMax, hdz, startPhi, endPhi);
          // the puncher ( to make a hole for EndBeamPipe in endcap )
 	 G4EllipticalTube *ksolidPunch = new G4EllipticalTube( "solidPunch", dx, dy, pipe_th);
 
  	 G4SubtractionSolid *solidEndcap = new G4SubtractionSolid( "solidEndcap",
-								   solidtmp, 
+								   helper, 
 								   ksolidPunch,
 								   0,
 								   G4ThreeVector( dxshift, 0., 0.));

@@ -106,11 +106,12 @@ private:
     // num cells in xy-directions
     G4int NumCellsRho, NumSectorsPhi;
 
+      // inner radius and phi offset size
+  G4double CalRhoMin, CalPhiOffset;
+
       // grid size
   G4double cellDimRho, cellDimPhi;
 
-      // inner radius and phi offset size
-  G4double CalRhoMin, CalPhiOffset;
 
       // type of cell ( virtual =true -> segmentaion at SD driver level )
   G4bool VirtualCell;

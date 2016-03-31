@@ -12,7 +12,7 @@
 //*                                                     *
 //*******************************************************
 //
-// $Id: PhysicsListFactory.hh,v 1.2 2004/04/08 14:27:03 frank Exp $
+// $Id$
 // $Name: mokka-06-07-patch02 $
 //
 // Factory to create a physics list from a string.

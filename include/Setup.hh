@@ -5,9 +5,11 @@
 #define SETUP_H 1
 
 #include <sys/times.h>
-
+#include "G4SystemOfUnits.hh"
 #include "globals.hh"
 #include "G4Version.hh"
+
+
 #define G4_VERSION_GE( VERSION ) ( G4VERSION_NUMBER >= VERSION )
 
 

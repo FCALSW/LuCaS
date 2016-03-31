@@ -5,7 +5,7 @@
 // *  polywww.in2p3.fr/geant4/tesla/www/mokka/mokka.html   *
 // *********************************************************
 //
-// $Id: ParticleGunGenerator.cc,v 1.2 2007/06/22 14:42:50 musat Exp $
+// $Id$
 // $Name: mokka-06-07-patch02 $
 
 #include "ParticleGunGenerator.hh"
@@ -19,6 +19,7 @@
 #include "G4ParticleDefinition.hh"
 #include "G4UIcommand.hh"
 #include "Randomize.hh"
+#include "G4SystemOfUnits.hh"
 
 #include <fstream>
 

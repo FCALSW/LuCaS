@@ -23,7 +23,7 @@ endif()
 
 # require proper c++
 #+
-ADD_DEFINITIONS( "-Wall -ansi -pedantic" )
+ADD_DEFINITIONS( "-Wall -ansi -pedantic -std=c++11 " )
 ADD_DEFINITIONS( "-Wno-long-long" )
 
 # find Lucas cmake modules
@@ -111,6 +111,7 @@ FILE(GLOB headers ${ROOT_INCLUDE_DIR}/*.h)
 if( GEANT4_CONFIG_DEBUG )   
     message( STATUS " ************** Lucas include dir ${PROJECT_INCLUDE_DIR}")
     message( STATUS " ************** ROOT_INCLUDE_DIR ${ROOT_INCLUDE_DIR}")
+    message( STATUS " ************** ROOT_VERSION     ${ROOT_VERSION}")
     message( STATUS " ************** GEANT4_INLUDE_DIR ${GEANT4_INCLUDE_DIR}")
     message( STATUS " ************** GEANT4_LIB_DIR ${GEANT4_LIB_DIR}")
     message( STATUS " ************** GEANT4_INCLUDE_DIRS ${GEANT4_INCLUDE_DIRS}")
@@ -125,15 +126,18 @@ endif()
 #
 #
 set( dictionary LucasDict )
-add_custom_command(OUTPUT ${dictionary}.cc ${dictionary}.h
+SET(rdict_pcm ${dictionary}_rdict )
+add_custom_command(OUTPUT ${dictionary}.cc ${dictionary}.h ${rdict_pcm}.pcm
                    COMMAND ${ROOT_CINT_WRAP} -f ${dictionary}.cc 
                                     -c -I${PROJECT_SOURCE_DIR}/include
-                                     Track_t.hh Hit_t.hh LinkDef.h 
-                   COMMAND cp ${dictionary}.h ${PROJECT_SOURCE_DIR}/include )
+                                     Track_t.hh Hit_t.hh LinkDef.h )
+#                   COMMAND cp ${dictionary}.h ${PROJECT_SOURCE_DIR}/include )
+#                   COMMAND cp ${dictionary}.h ${PROJECT_SOURCE_DIR}/include )
 
 LIST(APPEND headers ${PROJECT_SOURCE_DIR}/include/${dictionary}.h)
 ADD_LIBRARY(${dictionary} SHARED ${dictionary}.cc)
 SET(libsuffix .so)
+
 SET(ROOT_LIBRARY_PROPERTIES ${ROOT_LIBRARY_PROPERTIES} SUFFIX ${libsuffix})
 SET_TARGET_PROPERTIES(${dictionary} PROPERTIES ${ROOT_LIBRARY_PROPERTIES})
 TARGET_LINK_LIBRARIES(${dictionary} ${GEANT4_LIBRARIES} ${ROOT_LIBRARIES} )
@@ -149,7 +153,7 @@ CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/cmake/templates/banner.hh.in" "${PROJECT_
 # Add the library and executable, and link it to the Geant4 libraries
 #
 ADD_LIBRARY( Lucas SHARED ${sources} )
-TARGET_LINK_LIBRARIES( Lucas ${GEANT4_LIBRARIES} ${ROOT_LIBRARIES} ${dictionary})
+TARGET_LINK_LIBRARIES( Lucas ${GEANT4_LIBRARIES} ${ROOT_LIBRARIES} ${dictionary} )
 
 ADD_EXECUTABLE(bin_Lucas Lucas.cc )
 SET_TARGET_PROPERTIES( bin_Lucas PROPERTIES OUTPUT_NAME Lucas )
@@ -160,11 +164,21 @@ TARGET_LINK_LIBRARIES( bin_Lucas ${dictionary} Lucas ${GEANT4_LIBRARIES} ${ROOT_
 
 install ( DIRECTORY ${PROJECT_SOURCE_DIR}/examples DESTINATION ${CMAKE_INSTALL_PREFIX} )
 install ( DIRECTORY ${PROJECT_SOURCE_DIR}/data DESTINATION ${CMAKE_INSTALL_PREFIX} )
+# get ROOT major version
+       EXECUTE_PROCESS( COMMAND dirname ${ROOT_VERSION}
+	 OUTPUT_VARIABLE ROOT_MAJOR_VERSION
+	 RESULT_VARIABLE _exit_code
+	 OUTPUT_STRIP_TRAILING_WHITESPACE
+       )
+message( STATUS "ROOT_MAJOR_VERSION : ${ROOT_MAJOR_VERSION}")
+IF( ROOT_MAJOR_VERSION VERSION_GREATER 6.00 )
+  INSTALL ( FILES build/${rdict_pcm}.pcm DESTINATION lib )
+ENDIF()
 #----------------------------------------------------------------------------
 # Install the executable and libraries to 'bin'and 'lib' directory under CMAKE_INSTALL_PREFIX
 #
 INSTALL(PROGRAMS ${PROJECT_BINARY_DIR}/setup.sh ${PROJECT_BINARY_DIR}/setup.csh DESTINATION bin)
 INSTALL(TARGETS bin_Lucas DESTINATION bin)
-INSTALL(TARGETS Lucas LucasDict DESTINATION lib)
+INSTALL(TARGETS Lucas ${dictionary} DESTINATION lib)
 
 

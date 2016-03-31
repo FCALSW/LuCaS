@@ -5,7 +5,7 @@
 // *  polywww.in2p3.fr/geant4/tesla/www/mokka/mokka.html   *
 // *********************************************************
 //
-// $Id: PrimaryGeneratorAction.hh,v 1.7 2007/06/21 16:14:45 musat Exp $
+// $Id$
 // $Name: mokka-06-07-patch02 $
 
 #ifndef PrimaryGeneratorAction_hh

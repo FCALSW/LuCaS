@@ -5,7 +5,7 @@
 // *  polywww.in2p3.fr/geant4/tesla/www/mokka/mokka.html   *
 // *********************************************************
 //
-// $Id: PrimaryGeneratorAction.cc,v 1.17 2008/07/03 14:35:26 musat Exp $
+// $Id$
 // $Name: mokka-06-07-patch02 $
 
 #include "PrimaryGeneratorAction.hh"
@@ -79,10 +79,10 @@ void PrimaryGeneratorAction::ApplyLorentzTransformation(G4Event *evt)
         const G4double px = particle->GetPx();
         const G4double py = particle->GetPy();
         const G4double pz = particle->GetPz();
-	const G4double m  = particle->GetMass() ;
+	const G4double mass  = particle->GetMass() ;
 
         // after the transformation (boost in x-direction)
-        const G4double pxPrime = betagamma * sqrt(sqr(px) + sqr(py) + sqr(pz) + sqr(m)) + gamma * px;
+        const G4double pxPrime = betagamma * sqrt(sqr(px) + sqr(py) + sqr(pz) + sqr(mass)) + gamma * px;
 
         // py and pz remain the same, E changes implicitly with px
         particle->SetMomentum(pxPrime, py, pz);

@@ -5,7 +5,7 @@
 // *  polywww.in2p3.fr/geant4/tesla/www/mokka/mokka.html   *
 // *********************************************************
 //
-// $Id: ParticleGunMessenger.hh,v 1.1 2007/06/21 16:14:45 musat Exp $
+// $Id$
 // $Name: mokka-06-07-patch02 $
 
 #ifndef ParticleGunMessenger_hh

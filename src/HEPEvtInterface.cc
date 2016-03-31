@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: G4HEPEvtInterface.cc,v 1.11 2006/06/29 18:09:48 gunter Exp $
+// $Id$
 // GEANT4 tag $Name: geant4-09-01 $
 //
 // 
@@ -40,6 +40,7 @@
 #include "G4ExceptionSeverity.hh"
 #include "G4Event.hh"
 #include "G4RunManager.hh"
+
 
 HEPEvtInterface::HEPEvtInterface(char* evfile)
 {
@@ -110,8 +111,8 @@ void HEPEvtInterface::GeneratePrimaryVertex(G4Event* evt)
 
     // create G4PrimaryParticle object
     G4PrimaryParticle* particle 
-      = new G4PrimaryParticle( IDHEP, PHEP1*GeV, PHEP2*GeV, PHEP3*GeV );
-    particle->SetMass( PHEP5*GeV );
+      = new G4PrimaryParticle( IDHEP, PHEP1*CLHEP::GeV, PHEP2*CLHEP::GeV, PHEP3*CLHEP::GeV );
+    particle->SetMass( PHEP5*CLHEP::GeV );
 
     // create HEPEvtParticle object
     G4HEPEvtParticle* hepParticle
