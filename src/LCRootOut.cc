@@ -11,13 +11,26 @@
 #include "LCDetectorConstruction.hh"
 //#include "LucasDict.h"
 
+#include <EVENT/LCIO.h>
+#include <IOIMPL/LCFactory.h>
+//#include <IO/ILCFactory.h>
+#include <IMPL/LCRunHeaderImpl.h>
+#include <IMPL/LCEventImpl.h>
+#include <IMPL/MCParticleImpl.h>
+#include <IMPL/LCCollectionVec.h>
+#include <IMPL/SimCalorimeterHitImpl.h>
+#include <UTIL/CellIDEncoder.h>
+
+
 TFile *LCRootOut::pRootFile = NULL;
 
-LCRootOut::LCRootOut()
+LCRootOut::LCRootOut() : 
+flcioWriter(0)
 { _file   = NULL;
 }
 
-LCRootOut::LCRootOut(const G4String name )
+LCRootOut::LCRootOut(const G4String name ) : 
+flcioWriter(0)
 {
   RootOutFile = name;
   _file = NULL;
@@ -33,11 +46,11 @@ void LCRootOut::CreateNewTree()
 {
     // create tree
     //
-  _LcalData = new TTree("Lcal", "Root file for LC hit data");
+  _LcalData = new TTree("Lcal", Setup::RunDescription );
     //
     // setup dictionary
     //
-    //G__cpp_setup_globalLucasDict();
+   //   G__cpp_setup_globalLucasDict();
     // 
 
     // create branches
@@ -119,8 +132,7 @@ void LCRootOut::Init()
       {
       
         // something is wrong - file exists, ROOT issues error message but run continues, 
-        // user is going to waste time runing job with no output saved in
-        // root file.
+        // user is going to waste time runing job with no output saved in root file.
 	// Abort the run
 	G4Exception ( " LCRootOut::Init: Attempt to override file :",
 		      Setup::RootFileName,
@@ -150,7 +162,34 @@ void LCRootOut::Init()
 		    Setup::RootFileName,
 		    RunMustBeAborted, " does not have class <Lcal>");
   } // if(!_file)
+
+  InitLCIO();
 }
+
+
+void LCRootOut::InitLCIO()
+{
+  G4String lciofname(Setup::RootFileName);
+  unsigned int extpos = lciofname.find_last_of(".");
+  if (extpos != lciofname.length() ) lciofname.erase(extpos, lciofname.length() - extpos);
+  lciofname += ".slcio";
+  
+  flcioWriter = IOIMPL::LCFactory::getInstance()->createLCWriter() ; 
+  flcioWriter->open( lciofname.c_str(), EVENT::LCIO::WRITE_NEW ) ;
+  G4cout << "Writing LCIO data to " << lciofname << G4endl;
+  
+  IMPL::LCRunHeaderImpl* runHdr = new IMPL::LCRunHeaderImpl ; 
+  runHdr->setRunNumber( Setup::RunNumber ) ;
+  runHdr->setDetectorName( "LumiCal" ) ;
+  
+  runHdr->setDescription (Setup::RunDescription);
+  runHdr->addActiveSubdetector ("LumiCal");
+  
+  flcioWriter->writeRunHeader( runHdr ) ;
+  delete runHdr ;   
+
+}
+
 
 void LCRootOut::ProcessEvent(const G4Event* event, LCHitsCollection *collection)
 {
@@ -193,7 +232,7 @@ void LCRootOut::ProcessEvent(const G4Event* event, LCHitsCollection *collection)
     while ( i < numHits){
       Hit_t hit;
       hit.cellID =(*collection)[i]->GetCellCode();
-      G4int    side = (hit.cellID >> 24) & 0xff ;
+      G4int    side = ( (hit.cellID >> 24) & 0xff ) ;
 
       hit.eHit  = (*collection)[i]->GetEnergy();
       hit.xCell = (*collection)[i]->GetXcell();
@@ -209,20 +248,115 @@ void LCRootOut::ProcessEvent(const G4Event* event, LCHitsCollection *collection)
       //
       i++;
     }
+  }
+  _LcalData->Fill();
 
-    _LcalData->Fill();
-    //
+  ProcessEventLCIO(event, collection);
+
+   //
     // clear vectors
     // 
     pTracks->clear();
     pHits->clear();
-    }
 
 
     /*    G4cout << "LCRootOut::ProcessEvent completed." << G4endl;
     G4cout << " Number of Hits "<< numHits << G4endl;
     G4cout << " Energy " << Etot1  / GeV << " [GeV]"<< G4endl; */
 }
+
+
+
+void LCRootOut::ProcessEventLCIO(const G4Event* event, LCHitsCollection *collection)
+{
+  IMPL::LCEventImpl*  evt = new IMPL::LCEventImpl() ;     // create the event 
+
+  evt->setRunNumber(Setup::RunNumber);
+  evt->setEventNumber(event->GetEventID());                  // set the event attributes
+  evt->setEventNumber(event->GetEventID());                  // set the event attributes
+  evt->setDetectorName( "LumiCal" ) ;
+  
+
+  IMPL::LCCollectionVec* mcpVec = new IMPL::LCCollectionVec( EVENT::LCIO::MCPARTICLE );
+  IMPL::MCParticleImpl  *mcp;
+  
+  numHits = 0; 
+  numPrim = 0;
+  Etot[0] = 0. ;
+  Etot[1] = 0. ;
+  Emax  = 0. ;
+  //
+  // get all primary MC particles
+  G4int nv = event->GetNumberOfPrimaryVertex();
+  G4int k=0;
+  for (int v = 0; v < nv ; v++) {
+    G4PrimaryVertex *pv = event->GetPrimaryVertex(v);
+    double vtc[3];
+    vtc[0] = pv->GetX0();
+    vtc[1] = pv->GetY0();
+    vtc[2] = pv->GetZ0();
+    G4PrimaryParticle *pp = pv->GetPrimary();
+    while (pp) {
+      mcp = new IMPL::MCParticleImpl;
+      mcp->setVertex(vtc);
+      double par[3];
+      par[0] = (pp->GetMomentum()).getX();
+      par[1] = (pp->GetMomentum()).getY();
+      par[2] = (pp->GetMomentum()).getZ();
+      mcp->setMomentum(par);
+
+      mcp->setPDG(pp->GetPDGcode());
+      mcp->setMass(pp->GetMass());
+      mcp->setCharge(pp->GetCharge());
+      mcp->setCreatedInSimulation(false);
+      mcp->setDecayedInCalorimeter(true);
+
+      mcpVec->push_back( mcp );
+      k++;
+      pp = pp->GetNext();
+    }
+  }
+  evt->addCollection(mcpVec,"LumiCalPrimaryParticles");
+  numPrim = k;
+  //    G4cout<<" Number of primary particles: "<<numPrim << G4endl;
+
+  IMPL::LCCollectionVec* calVec = new IMPL::LCCollectionVec( EVENT::LCIO::SIMCALORIMETERHIT );
+  UTIL::CellIDEncoder<IMPL::SimCalorimeterHitImpl> cellid( "I:7,J:6,K:6,L:2" ,calVec ) ;  // rCell 0-64, phiCell 0-48, layer 0-40, side 0-1 (LuCaS uses: 1-2)
+
+  if( collection ) {
+    numHits = collection->entries();
+    //
+    G4int i = 0;
+    while ( i < numHits) {
+      IMPL::SimCalorimeterHitImpl* hit = new IMPL::SimCalorimeterHitImpl ;
+
+      G4int cellcode = (*collection)[i]->GetCellCode();
+      cellid["I"] = cellcode & 0xff ;           // cell number in sector, rCell 
+      cellid["J"] = (cellcode >> 8) & 0xff ;    // sector number, phiCell 
+      cellid["K"] = (cellcode >> 16) & 0xff ;   // layer number 
+      cellid["L"] = (cellcode >> 24) & 0xff ;   // side, arm;
+  
+      cellid.setCellID( hit ) ;
+      hit->setEnergy(static_cast<float>((*collection)[i]->GetEnergy()));
+
+      float pos[3];
+      pos[0] = static_cast<float>((*collection)[i]->GetXcell());
+      pos[1] = static_cast<float>((*collection)[i]->GetYcell());
+      pos[2] = static_cast<float>((*collection)[i]->GetZcell());
+      hit->setPosition (pos);
+ 
+      calVec->push_back( hit ) ;                // add hit objects to the collection
+      //
+      i++;
+    }
+  }
+  evt->addCollection(calVec,"LumiCalSimHits");   // add the collection with a name
+  flcioWriter->writeEvent( evt ) ;                  // write the event to the file
+
+  delete evt ;
+}
+
+
 
 void LCRootOut::ProcEventAccumulate( LCHitsCollection *collection )
 {
@@ -290,4 +424,5 @@ void LCRootOut::End()
     _file = NULL;
     _LcalData = NULL;
   }
+  flcioWriter->close();
 }

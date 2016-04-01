@@ -1,6 +1,6 @@
 # - Try to find GEANT4
 #
-# GEANT4_DIR if needed must be set before use of this macro
+# Geant4_DIR if needed must be set before use of this macro
 #
 # Once done this will define
 #
@@ -9,10 +9,10 @@
 #  GEANT4_LIBRARIES - The libraries needed to use GEANT4
 #  GEANT4_DEFINITIONS - Compiler switches required for using GEANT4
 #
-
 MESSAGE(STATUS "Looking for GEANT4...")
-	IF( NOT GEANT4_DIR)
-	    FIND_PROGRAM( GEANT4_CONFIG_EXECUTABLE geant4-config )
+
+	IF( NOT GEANT4_DIR )
+           FIND_PROGRAM( GEANT4_CONFIG_EXECUTABLE geant4-config )
 	ELSE()
 	   SET( GEANT4_CONFIG_EXECUTABLE ${GEANT4_DIR}/bin/geant4-config )
 	ENDIF()

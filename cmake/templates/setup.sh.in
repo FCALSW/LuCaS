@@ -52,6 +52,22 @@ if ! echo $LD_LIBRARY_PATH | grep -q $ROOTLIB ; then
         export LD_LIBRARY_PATH=$ROOTLIB
     fi
 fi
+# ---- LCIO
+#+
+     export LCIO="@LCIO_DIR@"
+     export PATH=$LCIO/bin:$LCIO/tools:$PATH
+     export PYTHONPATH=$LCIO/src/python:$PYTHONPATH
+     alias pylcio='python $LCIO/src/python/pylcio.py'
+     
+     LCIO_LIB="@LCIO_LIBRARY_DIRS@"
+if ! echo $LD_LIBRARY_PATH | grep -q $LCIO_LIB ; then
+    if [ $LD_LIBRARY_PATH ];  then
+        export LD_LIBRARY_PATH=$LCIO_LIB:$LD_LIBRARY_PATH
+    else
+        export LD_LIBRARY_PATH=$LCIO_LIB
+    fi
+fi
+     
 
 # --- @PROJECT_NAME@ setup 
 #+ 

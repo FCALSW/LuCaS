@@ -1,5 +1,4 @@
-
-/*
+/* $Id$
  * class to setup initial parameters for Lcal geometry,
  * materials, and I/O.
  * 13/05/2009 initial version b.p.
@@ -19,12 +18,11 @@
 #include "G4ElementTable.hh"
 #include "G4NistManager.hh"
 #include "G4ios.hh"
-        
+
+#include "G4SystemOfUnits.hh"
 
 
 #include "Setup.hh"
-
-using namespace CLHEP;
 
 //
 // default values for all setup parameters
@@ -66,6 +64,9 @@ G4double Setup::LCal_Region_Cut =  0.005;
 G4double Setup::LHcal_Region_Cut = 1.;
 G4double Setup::BCal_Region_Cut  = 1.;
 G4double Setup::Mask_Region_Cut  = 1.;
+
+G4int    Setup::RunNumber = 0;
+G4String Setup::RunDescription = "";
 
 //-----------------------------------------------------------
 //   for beam pipe
@@ -391,7 +392,10 @@ void Setup::SetBaseParameters()
 	else if ( !strcmp(parName,"Lcal_copper_heightF")) sscanf( aLine,"%s %lf", sDum, &(Setup::Lcal_copper_heightF)); 
 	else if ( !strcmp(parName,"Lcal_copper_heightB")) sscanf( aLine,"%s %lf", sDum, &(Setup::Lcal_copper_heightB));  
 	else if ( !strcmp(parName,"Lcal_copper_propF"  )) sscanf( aLine,"%s %lf", sDum, &(Setup::Lcal_copper_propF));  
-	else if ( !strcmp(parName,"Lcal_copper_propB"  )) sscanf( aLine,"%s %lf", sDum, &(Setup::Lcal_copper_propB));   
+	else if ( !strcmp(parName,"Lcal_copper_propB"  )) sscanf( aLine,"%s %lf", sDum, &(Setup::Lcal_copper_propB));
+	
+	else if ( !strcmp(parName,"RunNumber"  ))      sscanf( aLine,"%s %d", sDum, &(Setup::RunNumber));
+	else if ( !strcmp(parName,"RunDescription"  )) { sscanf( aLine,"%s %s", sDum, sDum ); Setup::RunDescription = sDum; }
 	else G4cout << " ****** Unknown parameter name : " << parName << G4endl;
   }
  

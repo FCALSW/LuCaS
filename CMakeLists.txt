@@ -14,12 +14,6 @@ SET( ${PROJECT_NAME}_VERSION_MINOR 0 )
 SET( ${PROJECT_NAME}_VERSION_PATCH 0 )
 SET( PROJECT_VERSION  ${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH} )
 
-# debug option
-#+
-OPTION(GEANT4_CONFIG_DEBUG "Turn on extra printout for debug purposes" OFF)
-if( GEANT4_CONFIG_DEBUG )   
-    set( Geant4_CONFIG_DEBUG 1)
-endif()
 
 # require proper c++
 #+
@@ -42,17 +36,23 @@ ENDIF()
 OPTION(ROOT_DICTIONARY "Build root dictionary needed to analyze Lucas ROOT file output" ON)
 OPTION(GEANT4_UIVIS_ALL "Build  with all Geant4 UI and Vis drivers" OFF)
 OPTION(GEANT4_UIVIS_TCSH "Build with Geant4 UI-tcsh and Vis-opengl only" ON)
+# debug option
+#+
+OPTION(GEANT4_CONFIG_DEBUG "Turn on extra printout for debug purposes" OFF)
+if( GEANT4_CONFIG_DEBUG )   
+    set( Geant4_CONFIG_DEBUG 1)
+endif()
 
 # You can set GEANT4_UIVIS to OFF via the command line or ccmake/cmake-gui
 # to build a batch mode only executable
 #+
 if(GEANT4_UIVIS_ALL)
-  FIND_PACKAGE(Geant4 9.6.1 REQUIRED ui_all vis_all)
+  FIND_PACKAGE(Geant4 9.6.1 REQUIRED ui_all vis_all gdml )
 else()
    if(GEANT4_UIVIS_TCSH)
-      FIND_PACKAGE(Geant4 9.6.1 REQUIRED ui_tcsh vis_opengl_x11)
+      FIND_PACKAGE(Geant4 9.6.1 REQUIRED ui_tcsh vis_opengl_x11 gdml)
    else()
-      FIND_PACKAGE(Geant4 9.6.1 REQUIRED )
+      FIND_PACKAGE(Geant4 9.6.1 REQUIRED gdml)
    endif()
 endif()
 
@@ -69,9 +69,9 @@ endif()
 # Setup Geant4 include directories and compile definitions
 #
 if ( GEANT4_FOUND )
- INCLUDE( ${Geant4_USE_FILE} )
+  INCLUDE( ${Geant4_USE_FILE} )
 else()
-message( FATAL_ERROR " Geant4 not found !!!! ")
+  MESSAGE( FATAL_ERROR " Geant4 not found !!!! ")
 endif()
 
 # find ROOT ( required package )
@@ -97,12 +97,20 @@ if(BUILD_STATIC_LIBS AND NOT BUILD_SHARED_LIBS )
   message(STATUS "Lucas : Geant4 built only Static Libraires. --> Lucas build disabled")
   return()
 endif()
+#----------------------------------------------------------------------------
+#  LCIO required
+#
+MARK_AS_ADVANCED( LCIO_DIR )
+FIND_PACKAGE( LCIO REQUIRED lcioDict)
+if( LCIO_LIBRARY_DIRS )
+  set( LCIO_LIBS "-L${LCIO_LIBRARY_DIRS} -llcioDict -llcio -lsio")
+endif()
 
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project
 #
 set( PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include )
-INCLUDE_DIRECTORIES(${PROJECT_INCLUDE_DIR} ${GEANT4_INCLUDE_DIRS} ${ROOT_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${PROJECT_INCLUDE_DIR} ${GEANT4_INCLUDE_DIR} ${ROOT_INCLUDE_DIR} ${LCIO_INCLUDE_DIRS})
 FILE(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
 FILE(GLOB headers ${PROJECT_INCLUDE_DIR}/*.hh)
 FILE(GLOB headers ${PROJECT_INCLUDE_DIR}/*.h)
@@ -112,6 +120,7 @@ if( GEANT4_CONFIG_DEBUG )
     message( STATUS " ************** Lucas include dir ${PROJECT_INCLUDE_DIR}")
     message( STATUS " ************** ROOT_INCLUDE_DIR ${ROOT_INCLUDE_DIR}")
     message( STATUS " ************** ROOT_VERSION     ${ROOT_VERSION}")
+    message( STATUS " ************** ROOT_LIBS        ${ROOT_LIBRARIES}")
     message( STATUS " ************** GEANT4_INLUDE_DIR ${GEANT4_INCLUDE_DIR}")
     message( STATUS " ************** GEANT4_LIB_DIR ${GEANT4_LIB_DIR}")
     message( STATUS " ************** GEANT4_INCLUDE_DIRS ${GEANT4_INCLUDE_DIRS}")
@@ -153,11 +162,11 @@ CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/cmake/templates/banner.hh.in" "${PROJECT_
 # Add the library and executable, and link it to the Geant4 libraries
 #
 ADD_LIBRARY( Lucas SHARED ${sources} )
-TARGET_LINK_LIBRARIES( Lucas ${GEANT4_LIBRARIES} ${ROOT_LIBRARIES} ${dictionary} )
+TARGET_LINK_LIBRARIES( Lucas ${GEANT4_LIBRARIES} ${ROOT_LIBRARIES} ${dictionary} ${LCIO_LIBS} )
 
 ADD_EXECUTABLE(bin_Lucas Lucas.cc )
 SET_TARGET_PROPERTIES( bin_Lucas PROPERTIES OUTPUT_NAME Lucas )
-TARGET_LINK_LIBRARIES( bin_Lucas ${dictionary} Lucas ${GEANT4_LIBRARIES} ${ROOT_LIBRARIES})
+TARGET_LINK_LIBRARIES( bin_Lucas ${dictionary} Lucas ${GEANT4_LIBRARIES} ${ROOT_LIBRARIES} ${LCIO_LIBS} )
 
 #----------------------------------------------------------------------------
 # Copy all examples to installation place
@@ -170,10 +179,16 @@ install ( DIRECTORY ${PROJECT_SOURCE_DIR}/data DESTINATION ${CMAKE_INSTALL_PREFI
 	 RESULT_VARIABLE _exit_code
 	 OUTPUT_STRIP_TRAILING_WHITESPACE
        )
-message( STATUS "ROOT_MAJOR_VERSION : ${ROOT_MAJOR_VERSION}")
+
 IF( ROOT_MAJOR_VERSION VERSION_GREATER 6.00 )
-  INSTALL ( FILES build/${rdict_pcm}.pcm DESTINATION lib )
-ENDIF()
+# get working dir 
+       EXECUTE_PROCESS( COMMAND pwd
+	 OUTPUT_VARIABLE PROJECT_BUILD_DIR
+	 RESULT_VARIABLE _exit_code
+	 OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+  INSTALL ( FILES ${PROJECT_BUILD_DIR}/${rdict_pcm}.pcm DESTINATION lib )
+ENDIF(ROOT_MAJOR_VERSION VERSION_GREATER 6.00)
 #----------------------------------------------------------------------------
 # Install the executable and libraries to 'bin'and 'lib' directory under CMAKE_INSTALL_PREFIX
 #

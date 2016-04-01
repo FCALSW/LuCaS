@@ -5,10 +5,10 @@
 #define SETUP_H 1
 
 #include <sys/times.h>
-#include "G4SystemOfUnits.hh"
+
 #include "globals.hh"
 #include "G4Version.hh"
-
+#include "G4SystemOfUnits.hh"
 
 #define G4_VERSION_GE( VERSION ) ( G4VERSION_NUMBER >= VERSION )
 
@@ -82,6 +82,11 @@ public:
   static G4int    BCal_VisSolid;
   // for mask
   static G4int    Mask_VisSolid;
+
+
+  static G4int    RunNumber;
+  static G4String RunDescription;
+  
      
   //-------------------------------------
   // for LCAL

@@ -31,13 +31,14 @@
 
 // root classes:
 #include "TROOT.h"
-#include "TSystem.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1.h"
 
 #include "Track_t.hh"
 #include "Hit_t.hh"
+
+#include "IO/LCWriter.h"
 
 // namespaces
 using namespace std;
@@ -57,7 +58,9 @@ public:
 public:
  
   void Init();                                                         // opens a file, creates a Tree 
+  void InitLCIO();                                                     // opens a file for LCIO output 
   void ProcessEvent(const G4Event* event, LCHitsCollection *HitsColl);
+  void ProcessEventLCIO(const G4Event* event, LCHitsCollection *collection);
   void ProcEventAccumulate( LCHitsCollection *HitsColl);
   void End();                                                         // writes to file and closes it
   void SetAddresses();                                                // sets branch addresses in "UPDATE" mode
@@ -66,7 +69,7 @@ public:
   // root variables:
 static TFile *pRootFile;
 
-
+  
 private:
   // root output file name 
   G4String RootOutFile;
@@ -97,6 +100,8 @@ private:
   G4double Etot[2];       // total energy deposit in arm per arm
   G4double Emax;          // max  energy deposit in cell
 //------------------------------------------------------------------------
+// LCIO
+  IO::LCWriter* flcioWriter;  
 
 };
 
