@@ -14,15 +14,15 @@ if( NOT EXISTS ${ROOT_CONFIG_EXECUTABLE} )
 
 message ( STATUS "Looking for ROOT :" )
 
-if( IS_DIRECTORY ${ROOTSYS} )
-message ( STATUS "                 - in ROOTSYS" )
+if( IS_DIRECTORY ${ROOT_DIR} )
+message ( STATUS "                 - in ${ROOT_DIR}" )
 
    find_program( ROOT_CONFIG_EXECUTABLE root-config
                PATHS $ENV{ROOTSYS}/bin ${ROOTSYS}/bin NO_DEFAULT_PATH )
-else( IS_DIRECTORY ${ROOTSYS} )
+else( IS_DIRECTORY ${ROOT_DIR} )
 message ( STATUS "                 - in default locations : ${CMAKE_PREFIX_PATH}" )
    find_program(ROOT_CONFIG_EXECUTABLE root-config )
-endif( IS_DIRECTORY ${ROOTSYS} )
+endif( IS_DIRECTORY ${ROOT_DIR} )
 
 endif(NOT EXISTS ${ROOT_CONFIG_EXECUTABLE})
 
@@ -45,7 +45,7 @@ else()
     COMMAND ${ROOT_CONFIG_EXECUTABLE} --prefix
     OUTPUT_VARIABLE _rootsys 
     OUTPUT_STRIP_TRAILING_WHITESPACE)
-    set(ROOTSYS  ${_rootsys} CACHE FILEPATH " ROOT home prefix" FORCE)
+    set(ROOT_DIR  ${_rootsys} CACHE FILEPATH " ROOT home prefix" FORCE)
 
   execute_process(
     COMMAND ${ROOT_CONFIG_EXECUTABLE} --version 
@@ -81,8 +81,8 @@ endif()
 
 
 include(CMakeMacroParseArguments)
-find_program(ROOT_CINT_EXECUTABLE rootcint PATHS ${ROOTSYS}/bin NO_DEFAULT_PATH )
-find_program(ROOT_GENREFLEX_EXECUTABLE genreflex PATHS ${ROOTSYS}/bin NO_DEFAULT_PATH )
+find_program(ROOT_CINT_EXECUTABLE rootcint PATHS ${ROOT_DIR}/bin NO_DEFAULT_PATH )
+find_program(ROOT_GENREFLEX_EXECUTABLE genreflex PATHS ${ROOT_DIR}/bin NO_DEFAULT_PATH )
 find_package(GCCXML)
 
 # set scope for  rootcint 

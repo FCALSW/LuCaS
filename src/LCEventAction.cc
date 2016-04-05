@@ -69,8 +69,8 @@ void LCEventAction::BeginOfEventAction(const G4Event*)
      if( semaphoreFile ) {
        G4RunManager::GetRunManager()->AbortRun( false ); 
        semaphoreFile.close();
-       G4cout<< " LCEventAction::BeginOfEventAction : Aborting the run on user request !" << G4endl;  
-    // remove file to avoid unwanted abort of the next run
+       G4cout<< " LCEventAction::BeginOfEventAction : Aborting the run "<< Setup::RunNumber <<" on user request !" << G4endl;  
+    // remove file to avoid unwanted(?) abort of the next run
        G4String rmCmd = "/control/shell rm aStopRun";
        G4UImanager::GetUIpointer()->ApplyCommand(rmCmd); 
 
@@ -79,12 +79,11 @@ void LCEventAction::BeginOfEventAction(const G4Event*)
     // Use a Sensitive Detector manager to assign an ID #
     // to the hits collections
 
-    SDman = G4SDManager::GetSDMpointer();
     time(&_start);
 
     if (collID < 0) {
-        // there is only 1 hits collection, so the name is constant
-        collID = SDman->GetCollectionID("LumiCalSD_HC");
+      SDman = G4SDManager::GetSDMpointer();
+      collID = SDman->GetCollectionID("LumiCalSD_HC");
     }
 
 }
@@ -102,31 +101,6 @@ void LCEventAction::EndOfEventAction(const G4Event* event)
       G4cout << " Event: "<<evtnum + Setup::EventStartNumber 
              <<" Back Energy Leak : "<<LeakEnergy / GeV <<" GeV"<<G4endl;
     }
-    //
-    // Log Run progress
-    //
-    if ( Setup::LogFreq > 0 ) 
-      {
-	if ( !(evtnum%(Setup::LogFreq)))
-	  {
-	time_t now ; time(&now);
-      tms fTimeEnd;
-      clock_t fNow = times( &fTimeEnd );
-      G4double tdiff = 10.*(fNow - Setup::StartTime) *ms ;
-      G4double evtime = tdiff / (G4double)(evtnum);
-      G4double evtleft = G4double(Setup::NoOfEventsToProcess - evtnum );
-      G4double EST = evtime*evtleft;
-      evtleft /= (G4double)Setup::NoOfEventsToProcess;
-      evtleft  = (1. - evtleft)*100.;
-      G4cout << G4endl;
-      G4cout<<" LCEventAction::EndOfEventAction: "<<G4endl;
-      printf(" Event number : %d - %6.3f %% done ! Current time: %s \n", evtnum + Setup::EventStartNumber, evtleft,  ctime(&now)) ;
-      printf("       time elapsed: %10.1f ; time/evt %8.3f ; EST: %10.3f [sec]\n",tdiff/s, evtime/s, EST/s );
- 
-	  }
-      }
-
-    //
     G4HCofThisEvent *HCE = event->GetHCofThisEvent();
 
     LCHitsCollection *HitsColl = 0;
@@ -144,4 +118,33 @@ void LCEventAction::EndOfEventAction(const G4Event* event)
 	}
       }
     }
+    //
+    // Log Run progress
+    //
+    if ( Setup::LogFreq > 0 ) 
+      {
+	if ( !(evtnum%(Setup::LogFreq)))
+	  {
+	    time_t now ; time(&now);
+	    tms fTimeEnd;
+	    clock_t fNow = times( &fTimeEnd );
+	    G4double tdiff = 10.*(fNow - Setup::StartTime) *ms ;
+	    G4double evtime = tdiff / (G4double)(evtnum);
+	    G4double evtleft = G4double(Setup::NoOfEventsToProcess - evtnum );
+	    G4double EST = (evtime*evtleft) /s ;
+            G4double tdone = tdiff / s;
+	    G4int hEST = G4int( floor(EST/3600.) );
+	    G4int mEST = G4int( floor((EST - hEST*3600. )/60.)); 
+	    G4int sEST = G4int( EST - hEST*3600. - mEST*60. ); 
+	    evtleft /= (G4double)Setup::NoOfEventsToProcess;
+	    evtleft  = (1. - evtleft)*100.;
+	    G4cout << G4endl;
+	    G4cout<<" LCEventAction::EndOfEventAction: Run "<< Setup::RunNumber <<G4endl;
+	    printf(" Event number : %d - %6.3f %% done ! Current time: %s \n", evtnum + Setup::EventStartNumber, evtleft,  ctime(&now)) ;
+	    printf("       time elapsed: %10.1f [sec]; time/evt %8.3f [sec] ; EST: %d2h %d2min %d2sec \n",tdone, evtime/s, hEST, mEST, sEST );
+ 
+	  }
+      }
+
+    //
 }

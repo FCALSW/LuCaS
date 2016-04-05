@@ -124,7 +124,7 @@ public:
 protected:
 
     cell_code code;                   // encoded cell id
-    G4double Energy;    // Total energy that has accumulated in the cell
+    G4double Energy;                  // Total energy that has accumulated in the cell
 
 private:
 

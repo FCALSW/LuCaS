@@ -13,13 +13,15 @@
 
 #include <EVENT/LCIO.h>
 #include <IOIMPL/LCFactory.h>
-//#include <IO/ILCFactory.h>
+
 #include <IMPL/LCRunHeaderImpl.h>
 #include <IMPL/LCEventImpl.h>
 #include <IMPL/MCParticleImpl.h>
 #include <IMPL/LCCollectionVec.h>
 #include <IMPL/SimCalorimeterHitImpl.h>
 #include <UTIL/CellIDEncoder.h>
+
+#include "G4UImanager.hh"
 
 
 TFile *LCRootOut::pRootFile = NULL;
@@ -45,13 +47,8 @@ LCRootOut::~LCRootOut()
 void LCRootOut::CreateNewTree()
 {
     // create tree
-    //
-  _LcalData = new TTree("Lcal", Setup::RunDescription );
-    //
-    // setup dictionary
-    //
-   //   G__cpp_setup_globalLucasDict();
-    // 
+    //+
+    _LcalData = new TTree("Lcal", Setup::RunDescription );
 
     // create branches
     //
@@ -59,13 +56,16 @@ void LCRootOut::CreateNewTree()
     _LcalData->Branch("vX", &vX, "vX/D");       // Vertex primary particle
     _LcalData->Branch("vY", &vY, "vY/D");       // Vertex primary particle
     _LcalData->Branch("vZ", &vZ, "vZ/D");       // Vertex primary particle
+    // +
     // primary particles 
     _LcalData->Branch("numPrim", &numPrim, "numPrim/I");               // number of primary particles
     _LcalData->Branch("numHits", &numHits, "numHits/I");               // number of calo hits
     _LcalData->Branch("Etot", Etot, "Etot[2]/D");                      // total  energy deposit per side 1
     _LcalData->Branch("Emax", &Emax, "Emax/D");                        //  max hit energy
+    // +
     // tracks
     _LcalData->Branch("Tracks","std::vector< Track_t >", &pTracks );   // primary particles momenta
+    // +
     // hits
     _LcalData->Branch("Hits","std::vector< Hit_t >", &pHits );         // calo hits
 }
@@ -106,7 +106,7 @@ void LCRootOut::Init()
 
     _LcalData = (TTree*)_file->Get("Lcal");
 
-   // the following is attempt to fix weird GEANT4 behaviour :
+    // the following is attempt to fix weird ROOT behaviour :
     // TFile object does not prevent against overwriting exiting file 
     // - in mode "NEW" or "CREATE" issues only warning message and continues
     //   this results in "empty run" results are not written to a file
@@ -169,14 +169,32 @@ void LCRootOut::Init()
 
 void LCRootOut::InitLCIO()
 {
+  G4String lcioMode[2] = { "NEW", "APPEND" };
   G4String lciofname(Setup::RootFileName);
   unsigned int extpos = lciofname.find_last_of(".");
   if (extpos != lciofname.length() ) lciofname.erase(extpos, lciofname.length() - extpos);
   lciofname += ".slcio";
   
-  flcioWriter = IOIMPL::LCFactory::getInstance()->createLCWriter() ; 
-  flcioWriter->open( lciofname.c_str(), EVENT::LCIO::WRITE_NEW ) ;
-  G4cout << "Writing LCIO data to " << lciofname << G4endl;
+  flcioWriter = IOIMPL::LCFactory::getInstance()->createLCWriter() ;
+  int openMode = EVENT::LCIO::WRITE_NEW;
+  if( Setup::RootFileMode == "UPDATE" ) openMode =  EVENT::LCIO::WRITE_APPEND;
+  if ( openMode == EVENT::LCIO::WRITE_APPEND ){
+  // BP. for APPEND mode check if file exists to avoid crash
+    FILE *fc;
+    std::string lsCmd("find -name ");
+    lsCmd += lciofname;
+    lsCmd += " -print";
+    fc = popen( lsCmd.c_str(),"r");
+    char ret[80] ;
+    if( fgets( ret, 80, fc ) == NULL ) {
+      openMode = EVENT::LCIO::WRITE_NEW; 
+    }
+    pclose(fc);
+  }
+
+  flcioWriter->open( lciofname.c_str(), openMode ) ;
+  
+  G4cout << "Writing LCIO data to " << lciofname << " openMode " << lcioMode[openMode] <<  G4endl;
   
   IMPL::LCRunHeaderImpl* runHdr = new IMPL::LCRunHeaderImpl ; 
   runHdr->setRunNumber( Setup::RunNumber ) ;
@@ -331,10 +349,10 @@ void LCRootOut::ProcessEventLCIO(const G4Event* event, LCHitsCollection *collect
       IMPL::SimCalorimeterHitImpl* hit = new IMPL::SimCalorimeterHitImpl ;
 
       G4int cellcode = (*collection)[i]->GetCellCode();
-      cellid["I"] = cellcode & 0xff ;           // cell number in sector, rCell 
-      cellid["J"] = (cellcode >> 8) & 0xff ;    // sector number, phiCell 
-      cellid["K"] = (cellcode >> 16) & 0xff ;   // layer number 
-      cellid["L"] = (cellcode >> 24) & 0xff ;   // side, arm;
+      cellid["I"] = (cellcode >> 0 ) & 0xff ;    // cell number in sector, rCell 
+      cellid["J"] = (cellcode >> 8 ) & 0xff ;    // sector number, phiCell 
+      cellid["K"] = (cellcode >> 16) & 0xff ;    // layer number 
+      cellid["L"] = (cellcode >> 24) & 0xff ;    // side, arm;
   
       cellid.setCellID( hit ) ;
       hit->setEnergy(static_cast<float>((*collection)[i]->GetEnergy()));

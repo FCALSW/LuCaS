@@ -228,13 +228,14 @@ void Setup::SetupInit( int argc, char *argv[])
  extern int optopt;
 
  while (true) { // exit with "break" if no more options are found
-    const int option = getopt(argc, argv, ":A:hx:c:ibm:M:o:P:s:");
+    const int option = getopt(argc, argv, ":A:hx:c:ibm:M:o:P:R:s:");
     // Options requiring an argument are followed by a colon.
     // See the manpage of getopt(3) for details.
     if (option == -1) break; // no more options found: exit the loop
     switch (option){
     case 'h' : Usage(Me); break;
     case 'P' : Setup::PrintLevel = std::strtol(optarg,NULL,10); break;
+    case 'R' : Setup::RunNumber = std::strtol(optarg,NULL,10); break;
     case 'i' : Setup::batchMode = false;  break;
     case 'b' : Setup::batchMode = true;   break;
     case 'm' : Setup::macroName    = optarg; break;
@@ -287,6 +288,7 @@ void Setup::SetBaseParameters()
        if( iDum != 0 ) Setup::batchMode = true;
        if ( Setup::macroName == "" ) Setup::macroName = sDum;}
 	  // globals   
+      
 	else if ( !strcmp(parName,"EventStartNumber") )   sscanf( aLine,"%s %d", sDum, &(Setup::EventStartNumber)); 
 	else if ( !strcmp(parName,"LogFreq") )            sscanf( aLine,"%s %d", sDum, &(Setup::LogFreq)); 
 	else if ( !strcmp(parName,"MaxStepsNumber") )     sscanf( aLine,"%s %d", sDum, &(Setup::MaxStepsNumber)); 
@@ -395,7 +397,9 @@ void Setup::SetBaseParameters()
 	else if ( !strcmp(parName,"Lcal_copper_propB"  )) sscanf( aLine,"%s %lf", sDum, &(Setup::Lcal_copper_propB));
 	
 	else if ( !strcmp(parName,"RunNumber"  ))      sscanf( aLine,"%s %d", sDum, &(Setup::RunNumber));
-	else if ( !strcmp(parName,"RunDescription"  )) { sscanf( aLine,"%s %s", sDum, sDum ); Setup::RunDescription = sDum; }
+	else if ( !strcmp(parName,"RunDescription"  )) { sscanf( aLine,"%s %s", parName, sDum );
+	                                                  size_t beg = aLine.find( sDum );
+                                                          Setup::RunDescription = aLine.substr( beg, aLine.size()- beg) ; }
 	else G4cout << " ****** Unknown parameter name : " << parName << G4endl;
   }
  

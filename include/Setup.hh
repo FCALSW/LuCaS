@@ -27,6 +27,7 @@ public:
   static Setup* GetSetup();
   void SetupInit( int argc, char* argv[] );
   void SetBaseParameters();
+  void SetRunNumber( G4int id ){ int i = ( id > 1 ) ? 1: id; Setup::RunNumber += i; }
   virtual ~Setup();
 
   //-----------------------------------------------

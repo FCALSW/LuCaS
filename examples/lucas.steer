@@ -11,6 +11,7 @@
 #---------------------------------------------------------------
 #  globals
 #-----------------------------------
+RunDescription          bhabha 500 GeV (LCal+Field+BeamPipe xing=0 ) 
 batchMode               1   bhabha.mac
 #batchMode               1   single-ele-scan.mac
 #batchMode               1       pairs.mac

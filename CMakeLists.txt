@@ -9,7 +9,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3 FATAL_ERROR)
 PROJECT(Lucas)
 
 # project version
-SET( ${PROJECT_NAME}_VERSION_MAJOR 1 )
+SET( ${PROJECT_NAME}_VERSION_MAJOR 2 )
 SET( ${PROJECT_NAME}_VERSION_MINOR 0 )
 SET( ${PROJECT_NAME}_VERSION_PATCH 0 )
 SET( PROJECT_VERSION  ${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH} )
@@ -17,6 +17,7 @@ SET( PROJECT_VERSION  ${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION
 
 # require proper c++
 #+
+
 ADD_DEFINITIONS( "-Wall -ansi -pedantic -std=c++11 " )
 ADD_DEFINITIONS( "-Wno-long-long" )
 
@@ -29,11 +30,16 @@ SET( CMAKE_MODULE_PATH  ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_path}
 IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
    SET(CMAKE_INSTALL_PREFIX $ENV{HOME}/${PROJECT_NAME}/${PROJECT_VERSION} CACHE PATH "Lucas install prefix" FORCE)
 ENDIF()
-
+# Project options
+#+
+OPTION(LUCAS_ROOT_DICTIONARY "Build root dictionary needed to analyze Lucas ROOT file output" ON)
+OPTION(LUCAS_LCSD_DEBUG "Toggle ON/OFF debug for LuCaS LCSensitiveDetector " OFF)
+IF( LUCAS_LCSD_DEBUG )
+  ADD_DEFINITIONS( -DLCSD_DEBUG )
+ENDIF( LUCAS_LCSD_DEBUG )
 
 # Find Geant4 package, activating all available UI and Vis drivers by default
 #+
-OPTION(ROOT_DICTIONARY "Build root dictionary needed to analyze Lucas ROOT file output" ON)
 OPTION(GEANT4_UIVIS_ALL "Build  with all Geant4 UI and Vis drivers" OFF)
 OPTION(GEANT4_UIVIS_TCSH "Build with Geant4 UI-tcsh and Vis-opengl only" ON)
 # debug option
@@ -76,18 +82,18 @@ endif()
 
 # find ROOT ( required package )
 #+
-IF(NOT IS_DIRECTORY ${ROOTSYS} )
+IF(NOT IS_DIRECTORY ${ROOT_DIR} )
  IF( IS_DIRECTORY $ENV{ROOTSYS} )
-   SET( ROOTSYS $ENV{ROOTSYS} CACHE PATH "ROOT instalation directory" FORCE)
+   SET( ROOT_DIR $ENV{ROOTSYS} CACHE PATH "ROOT instalation directory" FORCE)
  ELSE()
-   SET( ROOTSYS "ROOTSYS-NOTFOUND" CACHE PATH "ROOT instalation directory" FORCE)
+   SET( ROOT_DIR "ROOT_DIR-NOTFOUND" CACHE PATH "ROOT instalation directory" FORCE)
  ENDIF( IS_DIRECTORY $ENV{ROOTSYS} )
 ENDIF()
-   MARK_AS_ADVANCED( ROOTSYS )
+   MARK_AS_ADVANCED( ROOT_DIR )
 
 FIND_PACKAGE( ROOT REQUIRED )
 if(NOT ROOT_FOUND)
-  message(FATAL_ERROR "Lucas : ROOT package not found ! Set ROOTSYS variable pointing to Your ROOT installation dir ")  
+  message(FATAL_ERROR "Lucas : ROOT package not found ! Set ROOT_DIR variable pointing to Your ROOT installation dir ")  
   return()
 endif()
 #----------------------------------------------------------------------------
@@ -128,7 +134,7 @@ if( GEANT4_CONFIG_DEBUG )
 endif()
 
 
-if ( ROOT_DICTIONARY )
+if ( LUCAS_ROOT_DICTIONARY )
 endif()
 #----------------------------------------------------------------------------
 # Generate dictionaries, add ROOT libraries properties
@@ -173,6 +179,7 @@ TARGET_LINK_LIBRARIES( bin_Lucas ${dictionary} Lucas ${GEANT4_LIBRARIES} ${ROOT_
 
 install ( DIRECTORY ${PROJECT_SOURCE_DIR}/examples DESTINATION ${CMAKE_INSTALL_PREFIX} )
 install ( DIRECTORY ${PROJECT_SOURCE_DIR}/data DESTINATION ${CMAKE_INSTALL_PREFIX} )
+
 # get ROOT major version
        EXECUTE_PROCESS( COMMAND dirname ${ROOT_VERSION}
 	 OUTPUT_VARIABLE ROOT_MAJOR_VERSION
@@ -181,13 +188,7 @@ install ( DIRECTORY ${PROJECT_SOURCE_DIR}/data DESTINATION ${CMAKE_INSTALL_PREFI
        )
 
 IF( ROOT_MAJOR_VERSION VERSION_GREATER 6.00 )
-# get working dir 
-       EXECUTE_PROCESS( COMMAND pwd
-	 OUTPUT_VARIABLE PROJECT_BUILD_DIR
-	 RESULT_VARIABLE _exit_code
-	 OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-  INSTALL ( FILES ${PROJECT_BUILD_DIR}/${rdict_pcm}.pcm DESTINATION lib )
+  INSTALL ( FILES ${CMAKE_CURRENT_BINARY_DIR}/${rdict_pcm}.pcm DESTINATION lib )
 ENDIF(ROOT_MAJOR_VERSION VERSION_GREATER 6.00)
 #----------------------------------------------------------------------------
 # Install the executable and libraries to 'bin'and 'lib' directory under CMAKE_INSTALL_PREFIX
