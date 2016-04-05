@@ -6,7 +6,7 @@ std::cout<<endl<<endl<<endl;
 std::cout<<"****************************************************"<<endl;
 std::cout<<"*                                                  *"<<endl;
 std::cout<<"*           LumiCal Simulation Tool                *"<<endl;
-std::cout<<"*             Lucas version 1.0.0       "<<endl;
+std::cout<<"*             Lucas version 2.0.0       "<<endl;
 std::cout<<"*                                                  *"<<endl;
 std::cout<<"****************************************************"<<endl;
 }

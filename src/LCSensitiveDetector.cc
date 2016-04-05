@@ -205,7 +205,7 @@ G4bool LCSensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *)
         //     the origin is at the center of the disk
         //     hence the position of the cell center in its coordinate system is
         //     given by:
-      G4ThreeVector localCellPos(CalRhoMin+((G4double)cell_num)*cellDimRho,  0. , 0. );
+      G4ThreeVector localCellPos(CalRhoMin+((G4double)cell_num + 0.5)*cellDimRho,  0. , 0. );
        
       if ( VirtualCell ) localCellPos.setPhi( ((G4double)sector_num +0.5000) * cellDimPhi );
 	else             localCellPos.setPhi( 0.5000 * cellDimPhi );
