@@ -119,42 +119,37 @@ void LCRunAction::PrintLucasGearXML(){
   fGearFile = new std::ofstream( "LucasGear.xml", std::ios::out);
 
   *fGearFile << "<gear>" << std::endl;
-  *fGearFile << "\t <global detectorName=\"" << Setup::GlobalDetectorName << "\" />" << std::endl;    
-  *fGearFile << "\t <BField type=\"ConstantBField\" x=\"0.000000000e+00\" y=\"0.000000000e+00\" z=\"3.500000000e+00\" />" << std::endl
-         << "\t<detectors>" << std::endl;
+  *fGearFile << "\t<global detectorName=\"" << Setup::GlobalDetectorName << "\" />" << std::endl;    
+  *fGearFile << "\t<BField type=\"ConstantBField\" x=\"0.000000000e+00\" y=\"0.000000000e+00\" z=\"3.500000000e+00\" />" << std::endl
+             << "\t<detectors>" << std::endl;
   float lThickness = 2.*(float)Setup::Lcal_layer_hdz;
   float aThickness = 2.*(float)Setup::Lcal_tungsten_hdz;
   *fGearFile << "\t<detector name=\"Lcal\" geartype=\"CalorimeterParameters\">" << std::endl
-         << "\t\t<layout type=\"Endcap\" symmetry=\"1\" phi0=\"0.000000000e+00\" />" << std::endl
+	     << "\t\t<layout type=\"Endcap\" symmetry=\"1\" phi0=\"" << Setup::Lcal_Phi_Offset <<"\" />" << std::endl
 	     << "\t\t<dimensions inner_r=\"" << Setup::Lcal_Cell0_radius << "\" outer_r=\"" << Setup::Lcal_SensRadMax << "\" inner_z=\"" << Setup::Lcal_sens_Z0 << "\" />\n"
 	     << "\t\t<layer repeat=\"" << Setup::Lcal_n_layers << "\" thickness=\"" << lThickness << "\" absorberThickness=\"" << aThickness 
 	     << "\" cellSize0=\"" << Setup::Lcal_CellPitch << "\" cellSize1=\"" << Setup::Lcal_sector_dphi << "\" /> \n"
-         << "\t\t<parameter name=\"beam_crossing_angle\" type=\"double\" value=\"" << 1000.*Setup::Beam_Crossing_Angle << "\" /> \n"
-	 << "\t</detector>"<< std::endl;
+             << "\t\t<parameter name=\"beam_crossing_angle\" type=\"double\" value=\"" << 1000.*Setup::Beam_Crossing_Angle << "\" /> \n"
+	     << "\t</detector>"<< std::endl;
    
- *fGearFile << "<detector name=\"LucasParameters\" geartype=\"GearParameters\"> \n"
+ *fGearFile << "\t<detector name=\"LucasParameters\" geartype=\"GearParameters\"> \n"
             << "\t\t<parameter name=\"LucasVersion\" type=\"string\" value=\"tag "<< Setup::LCVersion << "\" /> \n"
-    /*
-            << "\t\t<parameter name="Lcal_beam_pipe_clearance" type="string" value="0.5" />
-            << "\t\t<parameter name="Lcal_extra_size" type="string" value="26" />
-            << "\t\t<parameter name="Lcal_inner_radius" type="string" value="80.0" />
-            << "\t\t<parameter name="Lcal_layer_gap" type="string" value="0.25" />
-            << "\t\t<parameter name="Lcal_n_layers" type="string" value="30" />
-            << "\t\t<parameter name="Lcal_n_tiles" type="string" value="12" />
-            << "\t\t<parameter name="Lcal_nstrips_phi" type="string" value="48" />
-            << "\t\t<parameter name="Lcal_nstrips_theta" type="string" value="64" />
-            << "\t\t<parameter name="Lcal_outer_radius" type="string" value="195.2" />
-            << "\t\t<parameter name="Lcal_phi_offset" type="string" value="0" />
-            << "\t\t<parameter name="Lcal_sensor_phi_offset" type="string" value="3.75" />
-            << "\t\t<parameter name="Lcal_silicon_thickness" type="string" value="0.32" />
-            << "\t\t<parameter name="Lcal_support_thickness" type="string" value="0.2" />
-            << "\t\t<parameter name="Lcal_tile_gap" type="string" value="1.2" />
-            << "\t\t<parameter name="Lcal_tungsten_thickness" type="string" value="3.5" />
-            << "\t\t<parameter name="Lcal_z_begin" type="string" value="2506.9" />
-            << "\t\t<parameter name="Lcal_z_thickness" type="string" value="128.1" />
-    */
-            << "\t</detector>" << std::endl;
-    
+	    << "\t\t<parameter name=\"Lcal_beam_pipe_clearance\" type=\"string\" value=\"" << Setup::Lcal_to_BeamPipe_clearance << "\" /> \n"
+	    << "\t\t<parameter name=\"Lcal_extra_size\" type=\"string\" value=\"" << Setup::Lcal_space_for_ears << "\" /> \n"
+	    << "\t\t<parameter name=\"Lcal_inner_radius\" type=\"string\" value=\"" << Setup::Lcal_inner_radius << "\" /> \n"
+	    << "\t\t<parameter name=\"Lcal_layer_gap\" type=\"string\" value=\"" << Setup::Lcal_layer_gap << "\" /> \n"
+	    << "\t\t<parameter name=\"Lcal_n_layers\" type=\"string\" value=\"" << Setup::Lcal_n_layers << "\" /> \n"
+	    << "\t\t<parameter name=\"Lcal_n_tiles\" type=\"string\" value=\"" << Setup::Lcal_n_tiles << "\" /> \n"
+	    << "\t\t<parameter name=\"Lcal_nstrips_phi\" type=\"string\" value=\"" << Setup::Lcal_n_sectors << "\" /> \n"
+	    << "\t\t<parameter name=\"Lcal_nstrips_theta\" type=\"string\" value=\"" << Setup::Lcal_n_rings << "\" /> \n"
+	    << "\t\t<parameter name=\"Lcal_outer_radius\" type=\"string\" value=\"" << Setup::Lcal_outer_radius <<"\" /> \n"
+	    << "\t\t<parameter name=\"Lcal_phi_offset\" type=\"string\" value=\"" << 0 << "\" /> \n"
+	    << "\t\t<parameter name=\"Lcal_sensor_phi_offset\" type=\"string\" value=\"" << Setup::Lcal_layers_phi_offset/deg << "\" /> \n"
+	    << "\t\t<parameter name=\"Lcal_silicon_thickness\" type=\"string\" value=\"" << Setup::Lcal_silicon_thickness << "\" /> \n"
+	    << "\t\t<parameter name=\"Lcal_tile_gap\" type=\"string\" value=\"" << Setup::Lcal_tile_gap << "\" /> \n"
+	    << "\t\t<parameter name=\"Lcal_tungsten_thickness\" type=\"string\" value=\"" << Setup::Lcal_tungsten_thickness << "\" /> \n"
+	    << "\t\t<parameter name=\"Lcal_z_begin\" type=\"string\" value=\"" << Setup::Lcal_sens_Z0 << "\" /> \n"
+            << "\t</detector>" << std::endl;    
  *fGearFile << "\t</detectors>  \n";
  *fGearFile<< "</gear>" << std::endl;
  fGearFile->close();

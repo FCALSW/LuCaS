@@ -99,9 +99,9 @@ G4double Setup::Lcal_outer_radius = 224.5 *mm;
 G4double Setup::Lcal_SensRadMin   =  80.0 *mm;
 G4double Setup::Lcal_SensRadMax   = 195.2 *mm;
 G4double Setup::Lcal_layers_phi_offset = 3.75 *deg;
-G4double Setup::Lcal_Phi_Offset = -3.75 *deg;
-G4double Setup::Lcal_start_phi = 0. *deg;
-G4double Setup::Lcal_end_phi = 360. *deg;
+G4double Setup::Lcal_Phi_Offset =    0. *deg;
+G4double Setup::Lcal_start_phi  =    0. *deg;
+G4double Setup::Lcal_end_phi     = 360. *deg;
 
 G4double Setup::Lcal_space_for_ears    = 25.5 *mm;
 G4double Setup::Lcal_tile_gap           = 1.2 *mm;
@@ -125,8 +125,8 @@ G4int    Setup::Lcal_VisSensSolid = 0;
 G4int    Setup::Lcal_VisAbsSolid  = 0;
 // base fanout
     // epoxy
- G4double Setup::Lcal_epoxy_heightF  = 0.075*mm;
- G4double Setup::Lcal_epoxy_heightB  = 0.150*mm;   // 2 layers * 75um each
+ G4double Setup::Lcal_epoxy_heightF  = 0.060*mm;
+ G4double Setup::Lcal_epoxy_heightB  = 0.120*mm;   // 2 layers * 60um each
  G4double Setup::Lcal_epoxy_propF    = 0.5;        // points of epoxy on sensor
  G4double Setup::Lcal_epoxy_propB    = 0.5;
     // kapton

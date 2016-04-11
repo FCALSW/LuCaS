@@ -176,7 +176,7 @@ TARGET_LINK_LIBRARIES( bin_Lucas ${dictionary} Lucas ${GEANT4_LIBRARIES} ${ROOT_
 
 #----------------------------------------------------------------------------
 # Copy all examples to installation place
-
+install ( FILES ${PROJECT_SOURCE_DIR}/README DESTINATION ${CMAKE_INSTALL_PREFIX} )
 install ( DIRECTORY ${PROJECT_SOURCE_DIR}/examples DESTINATION ${CMAKE_INSTALL_PREFIX} )
 install ( DIRECTORY ${PROJECT_SOURCE_DIR}/data DESTINATION ${CMAKE_INSTALL_PREFIX} )
 

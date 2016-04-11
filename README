@@ -1,0 +1,44 @@
+1. Getting source. 
+2. Installation.
+----------------
+   -  create out-of-source build directory ( recommended ):
+      > mkdir <build-dir>
+   -  move to this newly created directory:
+      > cd <build-dir>
+   -  run cmake ( ccmake or easiest cmake-gui if available on your system)
+      to generate makefiles:
+      > cmake -D ROOT_CONFIG_EXECUTABLE=<path-to-root-config>/root-config \\
+              -D GEANT4_CONFIG_EXECUTABLE=<path-to-geant4-config>/geant4-config \\
+              -D LCIO_DIR=<path-to-where-LCIO-is-installed>  \\
+              -D CMAKE_INSTALL_PREFIX=<dir-where-you-want-have-LUCAS-installed> \\
+               <buld-dir>
+   -  if cmake completed successfully do:
+      > make
+      > make install
+
+3.Running Lucas.
+----------------
+  When all above done, change to <dir-where-you-want-have-LUCAS-installed> :
+      > cd <dir-where-you-want-have-LUCAS-installed>
+  Setup run-time environment :
+      > source ./bin/setup.sh
+ Now you can start using Lucas, eg.
+      > Lucas -h              prints comand-line options 
+
+      > Lucas -i              runs in interactive mode with default detector geometry
+                              several macros sources examples can found in installed
+                              ./examples/geant4-macros
+
+      > Lucas -s <steering-file-name> 
+      this make Lucas read and execute directives from steering file 
+      ( see lucas.steer in ./examples). On output you will find:
+       - <some_name>.root   ROOT file with simulated hits and MCParticles
+       - <some_name>.slcio  LCIO file with info as above
+       - LucasGear.xml       LumiCal geometry description needed by Marlin processors
+
+In batch mode results of simulation are writen to ROOT  and LCIO files. ROOT file
+can processed with root macros examples installed in ./examples/root-macros. The LCIO 
+output can be analysed with Marlin LumicalClusterer processor ( see FCalClusterer package
+in ilcsoft ). All parameters names and their default values are listed in lucas.steer
+example.   
+ 

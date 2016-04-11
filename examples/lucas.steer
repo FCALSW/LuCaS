@@ -11,21 +11,31 @@
 #---------------------------------------------------------------
 #  globals
 #-----------------------------------
-RunDescription          bhabha 500 GeV (LCal+Field+BeamPipe xing=0 ) 
-batchMode               1   bhabha.mac
+GlobalDetectorName      LumiCal_ILD
+#RunDescription          bhabha  500GeV (LCal+Field+BeamPipe xing=14)
+#batchMode               1   bhabha.mac 
+#RootFileName            Lucas-bhabha-500GeV.root
+#Beam_Crossing_Angle     14.0
+#--------------
+RunDescription         electrons  50 GeV (LCal+Field+BeamPipe xing=0)
+batchMode              1   ele50.mac 
+RootFileName           Lucas-ele-50GeV.root
+Beam_Crossing_Angle    0.0
+#--------------
+#RunDescription          electrons scan  5-500GeV (LCal+Field+BeamPipe xing=0)
 #batchMode               1   single-ele-scan.mac
-#batchMode               1       pairs.mac
-PrintLevel              0
+#RootFileName           Lucas-ele-scan-5-50GeV.root
+#Beam_Crossing_Angle     0.0
+#--------------
+RunNumber               1
+RootFileMode          	RECREATE
 EventStartNumber        0
 MaxStepsNumber          20
 StepSizeMin             0.
-LogFreq                 1                     // 0 = no EndOfEvent logging
+LogFreq                 10                     // 0 = no EndOfEvent logging
 PhysicsListName         QGSP_BERT
-RootFileName            bhabha-500GeV.root 
-RootFileMode          	UPDATE 
 AccumulateEvents	0
 rangeCut        	0.005
-Beam_Crossing_Angle     0.
 Nominal_field_value     3.5
 Build_Beampipe          Yes
 Build_LHcal             No
@@ -61,21 +71,22 @@ Lcal_n_tiles              12
 Lcal_n_sectors            48
 Lcal_n_rings              64
 #----
-Lcal_z_end              2635.0
-Lcal_inner_radius         76.
+Lcal_z_end              2637.0
+Lcal_inner_radius         79.                // absorber inner radius
 Lcal_outer_radius        197.2               // [224.5] absorber outer radius
-Lcal_SensRadMin           80.           
+Lcal_SensRadMin           80.                // sensor  inner radius
 Lcal_SensRadMax          195.2 
 #---         
 Lcal_space_for_ears       25.5
-Lcal_sector_dead_gap       1.2
-Lcal_layers_phi_offset     0.              // 15 deg [3.75 deg]
+Lcal_tile_gap              1.2
+Lcal_layers_phi_offset     3.75            // 15 deg [3.75 deg]
 Lcal_Phi_Offset            0.              // 15 deg [3.75 deg]
 Lcal_layer_gap             0.1
 Lcal_silicon_thickness     0.32
 Lcal_pad_metal_thickness   0.02
 Lcal_tungsten_thickness    3.5
 #---
+Lcal_support               0
 Lcal_use_absorber          1  
 Lcal_use_fanout            1
 Lcal_use_FE                1

@@ -1,0 +1,4 @@
+#  batch  mode macro
+#
+/generator/generator two-particle.HEPEvt
+/run/beamOn  1000

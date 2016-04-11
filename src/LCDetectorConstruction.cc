@@ -165,6 +165,7 @@ void LCDetectorConstruction::InitDetectorParameters()
   Cell0_Rad  = Setup::Lcal_Cell0_radius;
   SensRadMin = Setup::Lcal_SensRadMin;        // silicon sensor r-min including dead edges
   SensRadMax = Setup::Lcal_SensRadMax;        // silicon sensor r-max
+  assert ( SensRadMin >=  innerRad );
 
   deadPhi    = Setup::Lcal_tile_gap;
  // derived
@@ -184,7 +185,6 @@ void LCDetectorConstruction::InitDetectorParameters()
   endPhi    = Setup::Lcal_end_phi;
   sectorPhi = Setup::Lcal_sector_dphi;
   tilePhi   = endPhi / G4double( nTiles );
-  assert ( SensRadMin >= (innerRad / cos ( tilePhi /2. )));
   // FE - space
   FECave_hDZ =   Setup::Lcal_ChipCaveDepth/2.;
   FECave_rmin =  SensRadMax;
