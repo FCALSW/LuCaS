@@ -1,14 +1,18 @@
 #ifndef BANNER_HH
 #define BANNER_HH
 
+const std::string LUCAS_VERSION ( "v2.0.0");
+
 void print_lucas_banner(){
-std::cout<<endl<<endl<<endl;
-std::cout<<"****************************************************"<<endl;
-std::cout<<"*                                                  *"<<endl;
-std::cout<<"*           LumiCal Simulation Tool                *"<<endl;
-std::cout<<"*             Lucas version 2.0.0       "<<endl;
-std::cout<<"*                                                  *"<<endl;
-std::cout<<"****************************************************"<<endl;
+std::cout<<std::endl<<std::endl<<std::endl;
+std::cout<<"****************************************************"<<std::endl;
+std::cout<<"*                                                  *"<<std::endl;
+std::cout<<"*           LumiCal Simulation Tool                *"<<std::endl;
+std::cout<<"*               version 2.0.0          *"<<std::endl;
+std::cout<<"*                                                  *"<<std::endl;
+std::cout<<"****************************************************"<<std::endl;
 }
+
+inline std::string LucasVersion() { return LUCAS_VERSION; }
 
 #endif

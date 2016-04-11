@@ -35,14 +35,26 @@
 #include "TTree.h"
 #include "TH1.h"
 
+// LCIO
+#include <lcio.h>
+#include <IO/LCWriter.h>
+#include <EVENT/LCIO.h>
+#include <DATA/LCFloatVec.h>
+#include <DATA/LCIntVec.h>
+#include <IOIMPL/LCFactory.h>
+#include <IMPL/LCEventImpl.h>
+#include <IMPL/LCRunHeaderImpl.h>
+#include <UTIL/LCTOOLS.h>
+
+// 
 #include "Track_t.hh"
 #include "Hit_t.hh"
-
-#include "IO/LCWriter.h"
 
 // namespaces
 using namespace std;
 using namespace TMath;
+using namespace UTIL;
+using namespace lcio;
 
 // ------------------------------------------------------------------
 // ROOT output class
@@ -65,17 +77,20 @@ public:
   void End();                                                         // writes to file and closes it
   void SetAddresses();                                                // sets branch addresses in "UPDATE" mode
   void CreateNewTree();                                               // creates new Tree
-  TFile *GetFile(){ return _file; }
+  TFile *GetFile(){ return _fileROOT; }
   // root variables:
 static TFile *pRootFile;
 
   
 private:
-  // root output file name 
+  // ROOT output file 
   G4String RootOutFile;
-  TFile *_file;
+  TFile *_fileROOT;
   TTree *_LcalData;
-  //
+ // LCIO
+  IO::LCWriter* _flcioWriter;  
+  IMPL::LCRunHeaderImpl* _flcioRunHdr; 
+ //
    G4double _z0;
    G4double _dz;
    G4double _r0;
@@ -100,8 +115,6 @@ private:
   G4double Etot[2];       // total energy deposit in arm per arm
   G4double Emax;          // max  energy deposit in cell
 //------------------------------------------------------------------------
-// LCIO
-  IO::LCWriter* flcioWriter;  
 
 };
 

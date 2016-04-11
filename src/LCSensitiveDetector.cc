@@ -188,10 +188,10 @@ G4bool LCSensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *)
     cellID.id0 = 0; cellID.id1 = 0;   // 32 0's in a row per member
                                       // LumiCal only uses id0; id1 is a legacy from the Mokka version
 
-    cellID.id0 |= (cell_num   <<  0); // store the cell # in the lowest 8 digits
-    cellID.id0 |= (sector_num <<  8); // shift the sector # to the next byte up
-    cellID.id0 |= (layer_num  << 16); // shift the layer # to the next byte up
-    cellID.id0 |= (LC_num     << 24); // shift the LumiCal # to the highest byte
+    cellID.id0 |= (cell_num   <<  0); // store the rcell #   (0-63)
+    cellID.id0 |= (sector_num <<  8); // shift the phisector (0-47)
+    cellID.id0 |= (layer_num  << 16); // shift the layer #   (1-30)
+    cellID.id0 |= (LC_num     << 24); // shift the LumiCal # (1-2)
 
     // get local and global position using touchable
     // check if the cell has been hit before, and check the indices

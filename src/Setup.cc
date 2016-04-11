@@ -23,6 +23,7 @@
 
 
 #include "Setup.hh"
+#include "banner.hh"
 
 //
 // default values for all setup parameters
@@ -36,6 +37,7 @@ G4double Setup::world_hdy = 1000. *mm;
 G4double Setup::world_hdz = 5000. *mm;
 //-----------------------------------
 // for globals
+G4String Setup::LCVersion = "LuCaS ";
 G4long   Setup::StartRandomSeed;
 G4int    Setup::EventStartNumber = 0;
 G4int    Setup::PrintLevel= 0;
@@ -81,6 +83,7 @@ G4int    Setup::Mask_VisSolid      = 1 ;
 
 //-----------------------------------------------------------
 // for LCAL
+std::string Setup::GlobalDetectorName = "LumiCal_ILD";
 //-----------------------------------------------------------
 // base LCAL
 G4bool   Setup::Lcal_virtual_cells = true;
@@ -101,7 +104,7 @@ G4double Setup::Lcal_start_phi = 0. *deg;
 G4double Setup::Lcal_end_phi = 360. *deg;
 
 G4double Setup::Lcal_space_for_ears    = 25.5 *mm;
-G4double Setup::Lcal_sector_dead_gap    = 1.2 *mm;
+G4double Setup::Lcal_tile_gap           = 1.2 *mm;
 G4double Setup::Lcal_layer_gap          = 0.2  *mm;
 G4double Setup::Lcal_silicon_thickness  = 0.32 *mm;
 G4double Setup::Lcal_pad_metal_thickness= 0.02 *mm;
@@ -264,7 +267,7 @@ void Setup::SetupInit( int argc, char *argv[])
  }
 void Setup::SetBaseParameters()
  {
-
+   Setup::LCVersion += LucasVersion();
   std::ifstream inputFile;
   inputFile.open( Setup::SetupFile );
   if ( !inputFile.is_open() ) G4Exception("Setup:: cannot open file: ",
@@ -289,6 +292,10 @@ void Setup::SetBaseParameters()
        if ( Setup::macroName == "" ) Setup::macroName = sDum;}
 	  // globals   
       
+	else if ( !strcmp(parName,"RunDescription"  )) { sscanf( aLine,"%s %s", parName, sDum ); size_t beg = aLine.find( sDum );
+                                                          Setup::RunDescription = aLine.substr( beg, aLine.size()- beg) ; }
+	else if ( !strcmp(parName,"GlobalDetectorName") ) {sscanf( aLine,"%s %s", sDum, sDum );  Setup::GlobalDetectorName = sDum;}
+	else if ( !strcmp(parName,"RunNumber"  ))         sscanf( aLine,"%s %d", sDum, &(Setup::RunNumber));
 	else if ( !strcmp(parName,"EventStartNumber") )   sscanf( aLine,"%s %d", sDum, &(Setup::EventStartNumber)); 
 	else if ( !strcmp(parName,"LogFreq") )            sscanf( aLine,"%s %d", sDum, &(Setup::LogFreq)); 
 	else if ( !strcmp(parName,"MaxStepsNumber") )     sscanf( aLine,"%s %d", sDum, &(Setup::MaxStepsNumber)); 
@@ -353,7 +360,7 @@ void Setup::SetBaseParameters()
         else if ( !strcmp(parName,"Lcal_SensRadMin"))         sscanf( aLine,"%s %lf", sDum, &(Setup::Lcal_SensRadMin)); 
         else if ( !strcmp(parName,"Lcal_SensRadMax"))         sscanf( aLine,"%s %lf", sDum, &(Setup::Lcal_SensRadMax)); 
         else if ( !strcmp(parName,"Lcal_space_for_ears"))     sscanf( aLine,"%s %lf", sDum, &(Setup::Lcal_space_for_ears)); 
-	else if ( !strcmp(parName,"Lcal_sector_dead_gap"   )) sscanf( aLine,"%s %lf", sDum, &(Setup::Lcal_sector_dead_gap));  
+	else if ( !strcmp(parName,"Lcal_tile_gap"   )) sscanf( aLine,"%s %lf", sDum, &(Setup::Lcal_tile_gap));  
 	else if ( !strcmp(parName,"Lcal_layers_phi_offset" )) { sscanf( aLine,"%s %lf", sDum, &(Setup::Lcal_layers_phi_offset));
 	                                                                                Setup::Lcal_layers_phi_offset *= deg; } 
 	else if ( !strcmp(parName,"Lcal_start_phi" )) { sscanf( aLine,"%s %lf", sDum, &(Setup::Lcal_start_phi));
@@ -396,10 +403,6 @@ void Setup::SetBaseParameters()
 	else if ( !strcmp(parName,"Lcal_copper_propF"  )) sscanf( aLine,"%s %lf", sDum, &(Setup::Lcal_copper_propF));  
 	else if ( !strcmp(parName,"Lcal_copper_propB"  )) sscanf( aLine,"%s %lf", sDum, &(Setup::Lcal_copper_propB));
 	
-	else if ( !strcmp(parName,"RunNumber"  ))      sscanf( aLine,"%s %d", sDum, &(Setup::RunNumber));
-	else if ( !strcmp(parName,"RunDescription"  )) { sscanf( aLine,"%s %s", parName, sDum );
-	                                                  size_t beg = aLine.find( sDum );
-                                                          Setup::RunDescription = aLine.substr( beg, aLine.size()- beg) ; }
 	else G4cout << " ****** Unknown parameter name : " << parName << G4endl;
   }
  
@@ -411,19 +414,12 @@ void Setup::SetBaseParameters()
 void Setup::SetDerivedParameters()
 {
   // set obligatory defaults if nothing was set so far 
- if( Setup::Beam_Crossing_Angle < 0. ) {  Setup::Beam_Crossing_Angle = 0. *mrad ;
-                                          Setup::lorentzTransAngle = Setup::Beam_Crossing_Angle / 2. *mrad; } 
- if( Setup::RootFileMode == "")  Setup::RootFileMode = "CREATE"; 
  //
-  G4double layer_thick;
+  Setup::lorentzTransAngle= Setup::Beam_Crossing_Angle / 2. *mrad;
+  Setup::Lcal_sector_dphi = Setup::Lcal_end_phi/ (G4double)Setup::Lcal_n_sectors;
   Setup::Lcal_silicon_hdz  = Setup::Lcal_silicon_thickness / 2.;
   Setup::Lcal_tungsten_hdz = Setup::Lcal_tungsten_thickness / 2.;
   Setup::Lcal_FEChip_rmin = Setup::Lcal_FEChip_rmax - Setup::Lcal_FEChip_space; 
-  Setup::Lcal_CellPitch  = (   Setup::Lcal_SensRadMax 
-                          -    Setup::Lcal_SensRadMin
-			  - 2.*Setup::Lcal_sector_dead_gap )/G4double(Setup::Lcal_n_rings);
-  Setup::Lcal_Cell0_radius = Setup::Lcal_SensRadMin
-                           + Setup::Lcal_sector_dead_gap + Setup::Lcal_CellPitch/2.;
   Setup::Lcal_surface_area = (sqr(Lcal_outer_radius)-sqr(Lcal_SensRadMin))*CLHEP::twopi / 2. ;
   // fanout
   Setup::Lcal_fanoutF_thickness = ( Setup::Lcal_epoxy_heightF 
@@ -442,17 +438,16 @@ void Setup::SetDerivedParameters()
     Setup::Lcal_absorber_gap = Setup::Lcal_fanoutB_thickness + Setup::Lcal_silicon_thickness  
                              + Setup::Lcal_fanoutF_thickness + Setup::Lcal_pad_metal_thickness 
                              + Setup::Lcal_layer_gap;
-
   }
-  layer_thick  =  Setup::Lcal_tungsten_thickness + Setup::Lcal_absorber_gap; 
-  Setup::Lcal_layer_hdz = layer_thick / 2.;
+  
+  Setup::Lcal_layer_hdz = ( Setup::Lcal_tungsten_thickness + Setup::Lcal_absorber_gap )/2.; 
   Setup::Lcal_hdz = G4double(Setup::Lcal_n_layers)*Setup::Lcal_layer_hdz;
-  //
- Setup::Lcal_sensor_dz = 2.*Setup::Lcal_layer_hdz;
-                          
- Setup::Lcal_sector_dphi = Setup::Lcal_end_phi/ (G4double)Setup::Lcal_n_sectors;
- Setup::lorentzTransAngle= Setup::Beam_Crossing_Angle / 2.;
+  Setup::Lcal_sensor_dz = 2.*Setup::Lcal_layer_hdz;                          
+  Setup::Lcal_Cell0_radius = Setup::Lcal_SensRadMin/cos( 2.*Setup::Lcal_sector_dphi ) + Setup::Lcal_tile_gap ;
+  Setup::Lcal_CellPitch  = (   Setup::Lcal_SensRadMax - Setup::Lcal_tile_gap - Setup::Lcal_Cell0_radius )/G4double(Setup::Lcal_n_rings);
+			   
 }
+
 void Setup::AddMaterials()
 {
 

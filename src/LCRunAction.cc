@@ -1,9 +1,5 @@
-/*
+/* $Id$
  * LCRunAction.cc
- * 2ModLumiCal
- *
- *  Created on: Apr 8, 2009
- *      Author: aguilar
  */
 #include <sys/times.h>
 #include "LCRunAction.hh"
@@ -33,10 +29,7 @@ void LCRunAction::BeginOfRunAction(const G4Run* Run)
   tms fTimeNow;
   Setup::GetSetup()->SetRunNumber( Run->GetRunID() );
     G4cout << "Run " << Setup::RunNumber << " start." << G4endl;
-    G4cout << " You may stop the run gently, any time you wish." << G4endl;
-    G4cout << "  To do it, create in the current directory semaphore file " << G4endl;
-    G4cout << "  named <aStopRun> , file content is ignored "<< G4endl; 
-    G4cout << "  ( eg. shell> touch aStopRun  )"<< G4endl; 
+    G4cout << "To stop the run gently, any time you wish do:  shell> touch StopTheRunNow" << G4endl;
  
     Setup::StartTime = times( &fTimeNow );
     Setup::NoOfEventsToProcess = Run->GetNumberOfEventToBeProcessed() - Setup::EventStartNumber;
@@ -47,22 +40,22 @@ void LCRunAction::BeginOfRunAction(const G4Run* Run)
     G4long seed = Setup::StartTime;
     G4RandGauss::setTheSeed(seed);
     //    CLHEP::HepRandom::setTheSeed(seed);
-    G4cout << " Starting with random seed " << seed << G4endl;
     Setup::StartRandomSeed = seed;
+    G4cout << " Starting with random seed " << seed << G4endl;
 
     if( RootOut ) RootOut->Init();
 
     Print("RUN_BEGIN", Run);
+    PrintLucasGearXML();
 
 }
 
 void LCRunAction::EndOfRunAction(const G4Run* Run )
 {
  
- 
-    Print("END_OF_RUN", Run);
+  Print("END_OF_RUN", Run);
 
-    if( RootOut )  RootOut->End();
+  if( RootOut )  RootOut->End();
 
 }
 
@@ -119,4 +112,52 @@ void LCRunAction::Print(G4String now, const G4Run* Run)
       G4cout << "|                        MASK:  "<<  Setup::Mask_Region_Cut / mm <<" [mm]"<< G4endl;
   }
   G4cout << "========================================================================"<<G4endl;
+}
+
+void LCRunAction::PrintLucasGearXML(){
+
+  fGearFile = new std::ofstream( "LucasGear.xml", std::ios::out);
+
+  *fGearFile << "<gear>" << std::endl;
+  *fGearFile << "\t <global detectorName=\"" << Setup::GlobalDetectorName << "\" />" << std::endl;    
+  *fGearFile << "\t <BField type=\"ConstantBField\" x=\"0.000000000e+00\" y=\"0.000000000e+00\" z=\"3.500000000e+00\" />" << std::endl
+         << "\t<detectors>" << std::endl;
+  float lThickness = 2.*(float)Setup::Lcal_layer_hdz;
+  float aThickness = 2.*(float)Setup::Lcal_tungsten_hdz;
+  *fGearFile << "\t<detector name=\"Lcal\" geartype=\"CalorimeterParameters\">" << std::endl
+         << "\t\t<layout type=\"Endcap\" symmetry=\"1\" phi0=\"0.000000000e+00\" />" << std::endl
+	     << "\t\t<dimensions inner_r=\"" << Setup::Lcal_Cell0_radius << "\" outer_r=\"" << Setup::Lcal_SensRadMax << "\" inner_z=\"" << Setup::Lcal_sens_Z0 << "\" />\n"
+	     << "\t\t<layer repeat=\"" << Setup::Lcal_n_layers << "\" thickness=\"" << lThickness << "\" absorberThickness=\"" << aThickness 
+	     << "\" cellSize0=\"" << Setup::Lcal_CellPitch << "\" cellSize1=\"" << Setup::Lcal_sector_dphi << "\" /> \n"
+         << "\t\t<parameter name=\"beam_crossing_angle\" type=\"double\" value=\"" << 1000.*Setup::Beam_Crossing_Angle << "\" /> \n"
+	 << "\t</detector>"<< std::endl;
+   
+ *fGearFile << "<detector name=\"LucasParameters\" geartype=\"GearParameters\"> \n"
+            << "\t\t<parameter name=\"LucasVersion\" type=\"string\" value=\"tag "<< Setup::LCVersion << "\" /> \n"
+    /*
+            << "\t\t<parameter name="Lcal_beam_pipe_clearance" type="string" value="0.5" />
+            << "\t\t<parameter name="Lcal_extra_size" type="string" value="26" />
+            << "\t\t<parameter name="Lcal_inner_radius" type="string" value="80.0" />
+            << "\t\t<parameter name="Lcal_layer_gap" type="string" value="0.25" />
+            << "\t\t<parameter name="Lcal_n_layers" type="string" value="30" />
+            << "\t\t<parameter name="Lcal_n_tiles" type="string" value="12" />
+            << "\t\t<parameter name="Lcal_nstrips_phi" type="string" value="48" />
+            << "\t\t<parameter name="Lcal_nstrips_theta" type="string" value="64" />
+            << "\t\t<parameter name="Lcal_outer_radius" type="string" value="195.2" />
+            << "\t\t<parameter name="Lcal_phi_offset" type="string" value="0" />
+            << "\t\t<parameter name="Lcal_sensor_phi_offset" type="string" value="3.75" />
+            << "\t\t<parameter name="Lcal_silicon_thickness" type="string" value="0.32" />
+            << "\t\t<parameter name="Lcal_support_thickness" type="string" value="0.2" />
+            << "\t\t<parameter name="Lcal_tile_gap" type="string" value="1.2" />
+            << "\t\t<parameter name="Lcal_tungsten_thickness" type="string" value="3.5" />
+            << "\t\t<parameter name="Lcal_z_begin" type="string" value="2506.9" />
+            << "\t\t<parameter name="Lcal_z_thickness" type="string" value="128.1" />
+    */
+            << "\t</detector>" << std::endl;
+    
+ *fGearFile << "\t</detectors>  \n";
+ *fGearFile<< "</gear>" << std::endl;
+ fGearFile->close();
+ std::cout << " LCRunAction::BeginOfRunAction: Geometry parameters saved in: LucasGear.xml ."<<std::endl;
+
 }

@@ -65,14 +65,15 @@ void LCEventAction::BeginOfEventAction(const G4Event*)
    //
     // Check if the semaphore file exists, if so abort gently the run
 
-     std::ifstream semaphoreFile("aStopRun");
+     std::ifstream semaphoreFile("StopTheRunNow");
      if( semaphoreFile ) {
-       G4RunManager::GetRunManager()->AbortRun( false ); 
        semaphoreFile.close();
        G4cout<< " LCEventAction::BeginOfEventAction : Aborting the run "<< Setup::RunNumber <<" on user request !" << G4endl;  
     // remove file to avoid unwanted(?) abort of the next run
-       G4String rmCmd = "/control/shell rm aStopRun";
-       G4UImanager::GetUIpointer()->ApplyCommand(rmCmd); 
+       G4String rmCmd = "/control/shell rm StopTheRunNow";
+       G4UImanager::GetUIpointer()->ApplyCommand(rmCmd);
+ 
+       G4RunManager::GetRunManager()->AbortRun( false ); 
 
      }
 
@@ -98,7 +99,7 @@ void LCEventAction::EndOfEventAction(const G4Event* event)
     // report on track killed
     //
     if ( noTrackKilled > 0 ){
-      G4cout << " Event: "<<evtnum + Setup::EventStartNumber 
+      G4cout << " Event: "<< evtnum + Setup::EventStartNumber 
              <<" Back Energy Leak : "<<LeakEnergy / GeV <<" GeV"<<G4endl;
     }
     G4HCofThisEvent *HCE = event->GetHCofThisEvent();
@@ -140,8 +141,8 @@ void LCEventAction::EndOfEventAction(const G4Event* event)
 	    evtleft  = (1. - evtleft)*100.;
 	    G4cout << G4endl;
 	    G4cout<<" LCEventAction::EndOfEventAction: Run "<< Setup::RunNumber <<G4endl;
-	    printf(" Event number : %d - %6.3f %% done ! Current time: %s \n", evtnum + Setup::EventStartNumber, evtleft,  ctime(&now)) ;
-	    printf("       time elapsed: %10.1f [sec]; time/evt %8.3f [sec] ; EST: %d2h %d2min %d2sec \n",tdone, evtime/s, hEST, mEST, sEST );
+	    printf(" Event number : %d - %6.3f %% done ! Current time: %s ", evtnum + Setup::EventStartNumber, evtleft,  ctime(&now)) ;
+	    printf("       time elapsed: %10.1f [sec]; time/evt %8.3f [sec] ; EST: %2dh %2dmin %2dsec \n",tdone, evtime/s, hEST, mEST, sEST );
  
 	  }
       }

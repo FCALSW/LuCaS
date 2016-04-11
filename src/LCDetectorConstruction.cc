@@ -166,8 +166,7 @@ void LCDetectorConstruction::InitDetectorParameters()
   SensRadMin = Setup::Lcal_SensRadMin;        // silicon sensor r-min including dead edges
   SensRadMax = Setup::Lcal_SensRadMax;        // silicon sensor r-max
 
-  deadPhi    = Setup::Lcal_sector_dead_gap;
-  phi_offset = Setup::Lcal_layers_phi_offset;
+  deadPhi    = Setup::Lcal_tile_gap;
  // derived
   hLumiCalDZ     = Setup::Lcal_hdz;          // half length of LCAL
   Lcal_zbegin    = Lcal_zend - 2.*hLumiCalDZ ;
@@ -922,7 +921,7 @@ void LCDetectorConstruction::BuildLCal()
         placeLayer += 2.*hLayerDZ;
       }
     }else{
-      // layers "fanlike" configuration
+      // layers "fanlike" configuration, every next layer rotated by PhiRot
       G4double rotang = 0.;
       for (int i = 0; i < nLayers; i++) {
         //
@@ -1698,7 +1697,7 @@ void LCDetectorConstruction::Print()
     G4double FE_space_thetamin = FECave_rmin / Sens_zend;
     G4double FE_space_thetamax = FECave_rmax / Sens_zbeg;
     G4double  dphi = 360.*sectorPhi / CLHEP::twopi;
-    G4double  tile_gap = 2.*(Setup::Lcal_sector_dead_gap + 0.05);
+    G4double  tile_gap = 2.*(Setup::Lcal_tile_gap + 0.05);
 
     G4cout << G4endl;
     printf ("%s\n"," ======================================================");

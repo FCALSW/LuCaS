@@ -37,6 +37,8 @@ public:
   //-----------------------------------
   //  globals
   //-----------------------------------
+
+  static G4String LCVersion;
   static clock_t  StartTime;
   static G4long   StartRandomSeed;
   static G4int    EventStartNumber;
@@ -94,6 +96,7 @@ public:
   //-------------------------------------
 
   // base
+  static std::string GlobalDetectorName;
   static G4bool   LcalTBeam;
   static G4bool   Lcal_virtual_cells;
   static G4bool   Lcal_layer_fan;
@@ -113,7 +116,7 @@ public:
   static G4double Lcal_end_phi;
 
   static G4double Lcal_space_for_ears;
-  static G4double Lcal_sector_dead_gap;
+  static G4double Lcal_tile_gap;
   static G4double Lcal_layer_gap;
   static G4double Lcal_silicon_thickness;
   static G4double Lcal_pad_metal_thickness;

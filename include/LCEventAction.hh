@@ -18,7 +18,7 @@
 
 #include "G4UserEventAction.hh"
 #include "globals.hh"
-
+ 
 #include <stdio.h>
 #include <time.h>
 
@@ -39,7 +39,8 @@ public:
        G4double GetLeakEnergy();
 
 private:
-    G4int collID;       // ID number for a collection of calorimeter hits
+
+    G4int    collID;       // ID number for a collection of calorimeter hits
     G4String collName;  // hits collection name
     LCRootOut *RootOut; // Handles writing the ROOT tree
     G4SDManager *SDman;
