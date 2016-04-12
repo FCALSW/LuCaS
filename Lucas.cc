@@ -1,12 +1,12 @@
-//============================================================================
-// Name        : LumiCalJA.cpp
-// Author      : Jonathan Aguilar
-// Version     : 1
-// Copyright   :
-// Description : LumiCal stand-alone application for Geant4
-//============================================================================
-/*
+/*============================================================================
+ * Name        : LumiCalJA.cpp
+ * Author      : Jonathan Aguilar
+ * Version     : 1
+ * Copyright   :
+ * Description : LumiCal stand-alone application for Geant4
+ *============================================================================
  $Id$
+ $URL$
 */
 
 // 
