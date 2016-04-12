@@ -1,6 +1,6 @@
 #ifndef DidField_HH
 #define DidField_HH
 #include <string.h>
-const G4String  DID_FIELD_DATA = "/home/bogdan/Lucas/test/data/did_field.data";
+const G4String  DID_FIELD_DATA = "/home/bogdan/Lucas/v2.0-lcio/data/did_field.data";
 
 #endif

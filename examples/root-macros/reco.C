@@ -1,3 +1,6 @@
+/*
+ $Id$
+*/
 //#define rot3_hh
 #define rot0_hh
 //#define si500

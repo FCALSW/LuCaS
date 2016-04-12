@@ -18,7 +18,21 @@ SET( PROJECT_VERSION  ${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION
 # require proper c++
 #+
 
-ADD_DEFINITIONS( "-Wall -ansi -pedantic -std=c++11 " )
+
+ADD_DEFINITIONS( "-Wall -ansi -pedantic" )
+IF( CMAKE_C_COMPILER_VERSION VERSION_GREATER  "4.8.0" )
+   OPTION( CMAKE_C++11 "gcc4.8 or higher required" ON )
+ELSE()
+   OPTION( CMAKE_C++11 "gcc4.8 or higher required" OFF )
+ENDIF()
+
+IF( CMAKE_C++11 ) 
+    ADD_DEFINITIONS( "-std=c++11" )
+    IF(CMAKE_C_COMPILER_VERSION VERSION_LESS  "4.8.0"  )
+      MESSAGE( WARNING " Compiler version found ${CMAKE_C_COMPILER_VERSION} minimum required 4.8 !")
+    ENDIF() 
+ENDIF( CMAKE_C++11 )
+
 ADD_DEFINITIONS( "-Wno-long-long" )
 
 # find Lucas cmake modules

@@ -18,7 +18,7 @@ if( IS_DIRECTORY ${ROOT_DIR} )
 message ( STATUS "                 - in ${ROOT_DIR}" )
 
    find_program( ROOT_CONFIG_EXECUTABLE root-config
-               PATHS $ENV{ROOTSYS}/bin ${ROOTSYS}/bin NO_DEFAULT_PATH )
+               PATHS $ENV{ROOT_DIR}/bin ${ROOTSYS}/bin NO_DEFAULT_PATH )
 else( IS_DIRECTORY ${ROOT_DIR} )
 message ( STATUS "                 - in default locations : ${CMAKE_PREFIX_PATH}" )
    find_program(ROOT_CONFIG_EXECUTABLE root-config )
@@ -35,7 +35,11 @@ message ( STATUS "                 - in /opt" )
        	COMMAND find /opt \( -name "root-config" \) -print -quit
 	OUTPUT_VARIABLE ROOT_CONFIG_EXECUTABLE 
 	OUTPUT_STRIP_TRAILING_WHITESPACE )
+
 endif(NOT EXISTS ${ROOT_CONFIG_EXECUTABLE} )
+
+  # Make variables changeble to the advanced user
+MARK_AS_ADVANCED(ROOT_CONFIG_EXECUTABLE)
 
 if(NOT EXISTS ${ROOT_CONFIG_EXECUTABLE} )
   set(ROOT_FOUND FALSE)
@@ -71,13 +75,12 @@ else()
   set(ROOT_CONFIG_EXECUTABLE ${ROOT_CONFIG_EXECUTABLE} CACHE FILE " root config executable name with prefix" FORCE)
   set(ROOT_LIBRARY_DIR ${ROOT_LIB_DIR} CACHE FILEPATH " ROOT libraries prefix" )
 
-  # Make variables changeble to the advanced user
-  mark_as_advanced(ROOT_CONFIG_EXECUTABLE)
 
   if(NOT ROOT_FIND_QUIETLY)
     message(STATUS "Found ROOT ${ROOT_VERSION} in ${ROOTSYS}")
   endif( NOT ROOT_FIND_QUIETLY)
-endif()
+
+endif(NOT EXISTS ${ROOT_CONFIG_EXECUTABLE})
 
 
 include(CMakeMacroParseArguments)
