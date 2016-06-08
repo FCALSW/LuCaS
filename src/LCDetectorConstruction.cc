@@ -54,6 +54,8 @@
 // Constructor
 LCDetectorConstruction::LCDetectorConstruction()
   : logicWorld(0),      physiWorld(0),           // World
+    LHcal(LCBuildLHcal()),
+    TBeam(LCBuildTBeam()),
     logicWholeLC(0),                             // WholeLC
     logicSensor(0),
     logicCell(0)                                 // Cell
@@ -72,11 +74,10 @@ G4VPhysicalVolume* LCDetectorConstruction::Construct()
   InitDetectorParameters();
 
   CreateTheWorld();          // makes World and sets logicWorld and physiWorld
-  G4cout << " Setup::LcalTBeam " << Setup::LcalTBeam << G4endl;
 
   if(Setup::LcalTBeam ){
-
-    BuildTBeam();
+    G4cout << " Setup::LcalTBeam " << Setup::LcalTBeam << G4endl;
+    TBeam.BuildTBeam( logicWorld );
 
   }else{
 
@@ -86,7 +87,7 @@ G4VPhysicalVolume* LCDetectorConstruction::Construct()
 
     BuildLCal();
 
-    if( Setup::Build_LHcal == "Yes" ) BuildLHcal();
+    if( Setup::Build_LHcal == "Yes" ) LHcal. BuildLHcal( logicWorld );
 
     if( Setup::Build_BCal  == "Yes" ) BuildBCal();
 
@@ -109,12 +110,6 @@ void LCDetectorConstruction::SetRegionCuts()
   G4ProductionCuts *cutsLCal = new G4ProductionCuts();
   cutsLCal->SetProductionCut( Setup::LCal_Region_Cut *mm);
   regionLCal->SetProductionCuts(cutsLCal);
-  //  LHCAL
-  if( Setup::Build_LHcal == "Yes" ){
-  G4ProductionCuts *cutsLHcal = new G4ProductionCuts();
-  cutsLHcal->SetProductionCut( Setup::LHcal_Region_Cut *mm);
-  regionLHcal->SetProductionCuts(cutsLHcal);
-  }
   //  BCAL
   if( Setup::Build_BCal  == "Yes" ){
   G4ProductionCuts *cutsBCal = new G4ProductionCuts();
@@ -144,7 +139,6 @@ void LCDetectorConstruction::InitDetectorParameters()
   FanoutMatF  = Setup::FanoutMatF;            // Front Fanout material
   FanoutMatB  = Setup::FanoutMatB;            // Back Fanout material
   BeamPipeMat = Setup::Beryllium;
-  LHcalMat    = Setup::Tungsten;
   BCalMat     = Setup::Tungsten;
   Mask_Mat    = Setup::Tungsten;
   if ( Setup::Build_Beampipe == "Yes" ) WorldMat  = Air;
@@ -175,7 +169,7 @@ void LCDetectorConstruction::InitDetectorParameters()
   CellPitch      = Setup::Lcal_CellPitch;
   layer_gap      = Setup::Lcal_layer_gap;         // air gap between layers
   hSiliconDZ     = Setup::Lcal_silicon_hdz;       // half thickness of the silicon
-  hMetalDZ      = Setup::Lcal_pad_metal_thickness/2.; // half thickness of the pad metallization
+  hMetalDZ       = Setup::Lcal_pad_metal_thickness/2.; // half thickness of the pad metallization
   hFanoutFrontDZ = Setup::Lcal_fanoutF_hdz;       // half thickness fanout front
   hFanoutBackDZ  = Setup::Lcal_fanoutB_hdz;       // half thickness fanout back 
   hTungstenDZ    = Setup::Lcal_tungsten_hdz;      // half thickness absorber
@@ -199,8 +193,6 @@ void LCDetectorConstruction::InitDetectorParameters()
   // LHcal
   LHcalToLCalDist = 45. *mm;
   LHcal_zbegin = Lcal_zend + LHcalToLCalDist ;
-  LHcal_rmin  =   93.0 *mm;
-  LHcal_rmax  =  330.0 *mm;
   LHcal_hDZ   = (525.0 /2.) *mm;
   LHcal_zend = LHcal_zbegin + 2.*LHcal_hDZ ;
   // BCal
@@ -250,147 +242,7 @@ void LCDetectorConstruction::CreateTheWorld()
 	 G4cout<< ".......... done! " << G4endl;
 }
 
-void LCDetectorConstruction::BuildTBeam(){
-  // air Box for DUT
-  /*
-  G4double LChx = 120.5 *mm;
-  G4double LChy = 120.5 *mm;
-  G4double LChz = 40.0 *mm;
-  //
-  G4Box *solidLC = new G4Box ( "solidLC", LChx, LChy, LChz );
-  G4LogicalVolume *logicLC = new G4LogicalVolume (solidLC, Air, "logicLC", 0, 0, 0);
-  logicLC->SetVisAttributes( G4VisAttributes::Invisible );
-  */
 
-  // alu box for sensors
-  G4double aluhx = 110.0 *mm;
-  G4double aluhy = 110.0 *mm;
-  G4double aluhz = 10.5 *mm;
-
-  G4Box *solidSpacer = new G4Box ( "solidSpacer", aluhx, aluhy, aluhz );
-  G4LogicalVolume *logicSpacer = new G4LogicalVolume (solidSpacer, Aluminium, "logicSpacer", 0, 0, 0);
-
-  // PCB
-  G4double pcbhx = 110.0 *mm;
-  G4double pcbhy = 110.0 *mm;
-  G4double pcbhz = 1.238 *mm;
-
-  G4Box *solidPCB = new G4Box ( "solidPCB", pcbhx, pcbhy, pcbhz );
-  logicPCB = new G4LogicalVolume (solidPCB, Setup::FR4, "logicPCB", 0, 0, 0);
-  // copper surface on PCB
-  G4double Cuhz = 0.019 *mm;
-
-  G4Box *solidCu = new G4Box ( "solidCu", pcbhx, pcbhy, Cuhz );
-  G4LogicalVolume *logicCu = new G4LogicalVolume (solidCu, Setup::Copper, "logicCu", 0, 0, 0);
-  // Copper layers on PCB
-  new G4PVPlacement ( 0, G4ThreeVector(0., 0., (pcbhz - Cuhz)), logicCu, "CuLayer", logicPCB, false, 1);
-  new G4PVPlacement ( 0, G4ThreeVector(0., 0., (-pcbhz + Cuhz)), logicCu, "CuLayer", logicPCB, false, 0);
-  // PCB into alu box
-  G4double PCBdistZ = 8.0*mm;
-  G4double zposPCB0 = -aluhz + pcbhz;
-  G4double zposPCB1 = -aluhz + 2.*pcbhz + PCBdistZ + pcbhz ; 
-  new G4PVPlacement ( 0, G4ThreeVector(0., 0., zposPCB0 ), logicPCB, "PCB0", logicSpacer, false, 0);
-  new G4PVPlacement ( 0, G4ThreeVector(0., 0., zposPCB1 ), logicPCB, "PCB1", logicSpacer, false, 0);
-  // sensor air spaces
-  G4double space0hz = 1.0 *mm;
-  G4double space1hz = 4.0 *mm;
-  G4double spaceWhz = 2.25 *mm;
-  G4double space0hy = 105.0 *mm;
-  G4double space0hx = 105.0 *mm;
-  G4Box *solidLayer0 = new G4Box ( "solidLayer0", space0hx, space0hy, space0hz );
-  G4Box *solidLayer1 = new G4Box ( "solidLayer1", space0hx, space0hy, space1hz );
-  G4Box *solidLayerW = new G4Box ( "solidLayerW", space0hx, space0hy, spaceWhz );
-  //
-  G4LogicalVolume *logicLayer0 = new G4LogicalVolume (solidLayer0, Air, "logicLayer0", 0, 0, 0);
-  G4LogicalVolume *logicLayer1 = new G4LogicalVolume (solidLayer1, Air, "logicLayer1", 0, 0, 0);
-  G4LogicalVolume *logicLayerW = new G4LogicalVolume (solidLayerW, Air, "logicLayerW", 0, 0, 0);
-  // sensor
-  G4double sPhi = 75. *deg;
-  G4double dPhi = 30. *deg;
-     G4Tubs *solidSensV = new G4Tubs("solidSensorV", SensRadMin + deadPhi ,SensRadMax - deadPhi, hSiliconDZ, sPhi, dPhi);
-     G4Tubs *solidMetal = new G4Tubs("solidMetal", SensRadMin + deadPhi ,SensRadMax - deadPhi, hMetalDZ, sPhi, dPhi);
-     G4Tubs *solidFanoutFrnt  = new G4Tubs("solidFanoutFrnt",SensRadMin, SensRadMax, hFanoutFrontDZ, sPhi,dPhi);
-     logicSensorV = new G4LogicalVolume(solidSensV, Silicon, "logicSensorV", 0,0,0);
-     logicMetalV = new G4LogicalVolume(solidMetal, Aluminium, "logicMetalV", 0,0,0);
-     logicFanoutFrnt = new G4LogicalVolume(solidFanoutFrnt, FanoutMatF,"logicFanoutFront", 0, 0, 0);  
-     //
-     // sensor layer 0
-     //
-     G4double zSi0 = -space0hz + hSiliconDZ;
-     G4double zAl0 = zSi0 + hSiliconDZ + hMetalDZ;
-     G4double zFun0 = zAl0 + hMetalDZ + hFanoutFrontDZ;
-     G4double ypos = -( SensRadMin + 0.5*(SensRadMax-SensRadMin));
-     new G4PVPlacement ( 0, G4ThreeVector( 0., ypos, zSi0), logicSensorV, "SensorV0", logicLayer0, false, 0);
-     new G4PVPlacement ( 0, G4ThreeVector( 0., ypos, zAl0), logicMetalV, "PadMetal0", logicLayer0, false, 0);
-     new G4PVPlacement ( 0, G4ThreeVector( 0., ypos, zFun0), logicFanoutFrnt, "FunOut0", logicLayer0, false, 0);
-     //
-     // sensor layer 1
-     //
-     G4double zSi1 = -space1hz + hSiliconDZ;
-     G4double zAl1 = zSi1+ hSiliconDZ + hMetalDZ;
-     G4double zFun1 = zAl1 + hMetalDZ + hFanoutFrontDZ;
-     new G4PVPlacement ( 0, G4ThreeVector( 0., ypos, zSi1), logicSensorV, "SensorV1", logicLayer1, false, 1);
-     new G4PVPlacement ( 0, G4ThreeVector( 0., ypos, zAl1), logicMetalV, "PadMetal1", logicLayer1, false, 1);
-     new G4PVPlacement ( 0, G4ThreeVector( 0., ypos, zFun1), logicFanoutFrnt, "FunOut1", logicLayer1, false, 1);
-     //
-     // absorber (fixed) non existent in run 2 of 2011
-     //
-     if ( nLayers > 0){
-     G4double zposAbs0 = -spaceWhz + hTungstenDZ;
-     G4Box *solidAbs0 = new G4Box("solidAbs0", 60.*mm, 60.*mm, hTungstenDZ );
-     G4LogicalVolume *logicAbs0 = new G4LogicalVolume(solidAbs0, Tungsten, "logicAbs0", 0, 0, 0);
-     new G4PVPlacement ( 0, G4ThreeVector( 0., 0., zposAbs0 ), logicAbs0, "Absorber0", logicLayerW, false, 1);
-     }
-     //
-     // put layers to alubox
-     //
-     G4double dwall = 1.5 *mm;
-     G4double zpos0 = zposPCB0 + pcbhz + space0hz;
-     G4double zpos1 = zpos0 + space0hz + dwall + spaceWhz;
-     G4double zpos2 = zposPCB1 + pcbhz + space1hz;
-     new G4PVPlacement ( 0, G4ThreeVector( 0., 0., zpos0 ), logicLayer0, "layer0", logicSpacer, false, 0);
-     new G4PVPlacement ( 0, G4ThreeVector( 0., 0., zpos1 ), logicLayerW, "layerW", logicSpacer, false, 0);
-     new G4PVPlacement ( 0, G4ThreeVector( 0., 0., zpos2 ), logicLayer1, "layer1", logicSpacer, false, 1);
-     //
-     // put LCAL DUT to world
-     //
-     G4double zposLC = -1000. *mm;
-     new G4PVPlacement ( 0, G4ThreeVector( 0., 0., zposLC ), logicSpacer, "DUT", logicWorld, false, 1);
-
-     //
-     // absorber ( variable thicknes )
-     //
-     if ( abs(nLayers) > 0 ) {
-       G4double absorberhz = fabs((double)nLayers) * hTungstenDZ ;
-       G4Box *solidAbs1 = new G4Box("solidAbs1", 60.*mm, 60.*mm, absorberhz );
-       G4LogicalVolume *logicAbs1 = new G4LogicalVolume(solidAbs1, Tungsten, "logicAbs1", 0, 0, 0);
-       new G4PVPlacement ( 0, G4ThreeVector( 0., 0., zposLC+aluhz+absorberhz ), logicAbs1, "Absorber1", logicWorld, false, 0);
-     }
-
-   //---------------
-    // SENSITIVE DETECTOR
-    //---------------
-    G4SDManager* SDman = G4SDManager::GetSDMpointer();
-
-    // Initialize the Sensitive Detector
-    SensDet = new LCSensitiveDetector("LumiCalSD",  // name
-                                      Cell0_Rad,    // inner LC radius
-                                      startPhi,     // start angle
-                                      CellPitch,    // radial cell size
-                                      sectorPhi,    // angular cell width
-                                      nCells,       // # cells in the rad dir
-                                      nSectors,     // # cells in the phi dir
-				      VirtualCell); // cell type real/virtual =  false/true
-        
-    SDman->AddNewDetector(SensDet);
-    // the Cells are the sensitive detectors
-   
-    logicSensorV->SetSensitiveDetector( SensDet );
-
-
-
-  G4cout <<  " Test Beam setup done !  "  << G4endl;
-}
 
 void LCDetectorConstruction::BuildLCal()
 {
@@ -1414,47 +1266,6 @@ void LCDetectorConstruction::BuildBeamPipe()
 
 
 
-void LCDetectorConstruction::BuildLHcal()
-{
-  G4cout <<  " Building LHCAL ..." << G4endl; 
-    G4double zpos = LHcal_zbegin + LHcal_hDZ;
-
-    G4Transform3D trans1( G4RotationMatrix().rotateY(rotAng1),
-                          G4ThreeVector( 0., 0., zpos).rotateY(rotAng1));
-    G4Transform3D trans2( G4RotationMatrix().rotateY(rotAng2),
-                          G4ThreeVector( 0., 0., zpos).rotateY(rotAng2));
-
-    G4Box *solidtmp = new G4Box ( "solidtmp", LHcal_rmax, LHcal_rmax, LHcal_hDZ );
-    G4Tubs *solidpunch = new G4Tubs ( "solidpunch", 0., LHcal_rmin, 2.*LHcal_hDZ, startPhi, endPhi );
-    G4SubtractionSolid *solidLHcal = new G4SubtractionSolid( "solidLHcal", solidtmp, solidpunch, 0, G4ThreeVector());
-    G4LogicalVolume *logicLHcal = new G4LogicalVolume( solidLHcal, LHcalMat, "logicLHcal", 0, 0, 0);
- 
-                  new G4PVPlacement( trans1 ,
-                                     logicLHcal,
-                                     "LHcal1",
-                                     logicWorld,
-                                     false,
-                                     1);
-                  new G4PVPlacement( trans2 ,
-                                     logicLHcal,
-                                     "LHcal2",
-                                     logicWorld,
-                                     false,
-                                     2);
-     G4VisAttributes *LHcalVisAtt = new G4VisAttributes(G4Colour(0.7, 0.3, 0.7));
-  
-       if(Setup::LHcal_VisSolid ) LHcalVisAtt->SetForceSolid(true);
-        else LHcalVisAtt->SetForceWireframe(true);
-	 logicLHcal->SetVisAttributes(LHcalVisAtt);
-
-    // define a subdetector region for LHCAL 
-    regionLHcal = new G4Region("LHCAL");
-    logicLHcal->SetRegion(regionLHcal);
-    regionLHcal->AddRootLogicalVolume( logicLHcal );
-
-  
-  G4cout <<  "                   .....done ! " << G4endl; 
-}
 
 void LCDetectorConstruction::BuildBCal()
 {
@@ -1616,6 +1427,7 @@ void LCDetectorConstruction::BuildMask()
 
 
 // =========== CELL PARAMETERIZATION ============
+//
 LCCellParam::LCCellParam(G4int    NoCells,
                          G4double startR,
                          G4double endR,

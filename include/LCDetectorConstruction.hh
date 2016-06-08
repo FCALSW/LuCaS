@@ -16,10 +16,11 @@
 #include "globals.hh"
 #include "G4PVDivision.hh"
 #include "G4VPVParameterisation.hh"
-//#include "G4VNestedParameterisation.hh"
 #include "G4NistManager.hh"
 
 #include "LCSensitiveDetector.hh"
+#include "LCBuildLHcal.hh"
+#include "LCBuildTBeam.hh"
 
 class G4Box;
 class G4Tubs;
@@ -27,6 +28,9 @@ class G4LogicalVolume;
 class G4VPhysicalVolume;
 class G4Material;
 class G4Region;
+
+class LCBuildLHcal;
+class LCBuildTBeam;
 
 class LCDetectorConstruction : public G4VUserDetectorConstruction
 {
@@ -46,10 +50,8 @@ public:
   void BuildField();
   void BuildBeamPipe();
   void BuildLCal();
-  void BuildLHcal();
   void BuildBCal();
   void BuildMask();
-  void BuildTBeam();
   void SetRegionCuts();
   void Print();
 
@@ -61,6 +63,11 @@ private:
     // -------------- Beam Pipe
     G4LogicalVolume *logicLCalInnerTube, *logEndVac;
 
+    // --------------
+    LCBuildLHcal LHcal;
+
+    // --------------
+    LCBuildTBeam TBeam;
  
     // -------------- LUMICAL SHELL
     G4LogicalVolume     *logicWholeLC;   // LumiCal logical volume
@@ -120,12 +127,8 @@ private:
                 *BCalMat,
                 *Mask_Mat,
                 *WorldMat;
-  // G4 regions created to set production cuts
-  // 
-  G4Region *regionLCal, *regionBCal, *regionLHcal, *regionMask;
+
   G4bool VirtualCell;
-  // rotation angle
-   G4double rotAng, rotAng1, rotAng2;
   // geometric parameters
    G4double Lcal_zbegin;
    G4double Lcal_zend;
@@ -163,7 +166,12 @@ private:
    G4double FECave_rmax ;
    G4double FEChip_hDZ;
    G4double PCB_hDZ;
-  G4double Lcal_extra_size;
+   G4double Lcal_extra_size;
+public:
+  // G4 regions created to set production cuts 
+  G4Region *regionLCal, *regionBCal, *regionLHcal, *regionMask;
+  // rotation angle
+  G4double rotAng, rotAng1, rotAng2;
   // Beam pipe
   G4double Lcal_inner_pipe_zend;
   G4double pipe_th;

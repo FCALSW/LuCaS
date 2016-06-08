@@ -12,16 +12,20 @@
               -D LCIO_DIR=<path-to-where-LCIO-is-installed>  \\
               -D CMAKE_INSTALL_PREFIX=<dir-where-you-want-have-LUCAS-installed> \\
                <buld-dir>
+optionally you may use ( if you have installed ) graphical cmake interface ccmake or cmake-gui
+ 
    -  if cmake completed successfully do:
       > make
       > make install
+Now you have created Lucas exe file and root dictionary libLucasDict.so, the latter is needed
+to access root tree created by Lucas.
 
 3.Running Lucas.
 ----------------
   When all above done, change to <dir-where-you-want-have-LUCAS-installed> :
       > cd <dir-where-you-want-have-LUCAS-installed>
   Setup run-time environment :
-      > source ./bin/setup.sh
+      > source ./bin/setup.sh    ( or setup.csh if you work in csh environment )
  Now you can start using Lucas, eg.
       > Lucas -h              prints comand-line options 
 
