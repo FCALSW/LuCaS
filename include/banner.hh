@@ -10,6 +10,7 @@ std::cout<<"*                                                  *"<<std::endl;
 std::cout<<"*           LumiCal Simulation Tool                *"<<std::endl;
 std::cout<<"*               version 2.0.0          *"<<std::endl;
 std::cout<<"*                                                  *"<<std::endl;
+std::cout<<"* https://svnsrv.desy.de/basic/FCAL/Software/LuCaS *"<<std::endl;
 std::cout<<"****************************************************"<<std::endl;
 }
 

@@ -211,7 +211,7 @@ void Setup::Usage( const char *name )
     << "                (default is " << Setup::rangeCut / mm << " mm)\n"
     << "-x <double>     specifies the Beam Crossing Angle in mrad\n"
     << "                (default is " << Setup::Beam_Crossing_Angle / mrad << " [mrad])\n"
-    << "-s <filename>   specifies name of the file with geometry setup \n"
+    << "-s <filename>   specifies name of steering file with geometry setup \n"
     << "-P <int>        specifies printout level ( default is 0= minimum print\n"
     << "                                                      3= debug printout\n"
     << G4endl;
