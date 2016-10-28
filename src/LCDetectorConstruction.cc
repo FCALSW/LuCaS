@@ -134,7 +134,7 @@ void LCDetectorConstruction::InitDetectorParameters()
   Silicon     = Setup::Silicon;               // Sensor Cell
   Iron        = Setup::Iron;                  // material for lateral beam tubes
   Aluminium   = Setup::Alu;                   // material for LCAL mechanical parts
-  Tungsten    = Setup::Wabsorber;              // Absorber plate
+  Tungsten    = Setup::Tungsten186;           // Absorber plate
   Graphite    = Setup::Graphite;
   FanoutMatF  = Setup::FanoutMatF;            // Front Fanout material
   FanoutMatB  = Setup::FanoutMatB;            // Back Fanout material
@@ -929,17 +929,20 @@ void LCDetectorConstruction::BuildField()
     G4FieldManager* fieldMgr
       = G4TransportationManager::GetTransportationManager()
         ->GetFieldManager();
-    if( Setup::Beam_Crossing_Angle == 0. ) {
-      LCField* myField = new LCField();
-
+    //    if( Setup::Beam_Crossing_Angle == 0. ) {
+    if( Setup::Field_Type == "DID" &&  Setup::Beam_Crossing_Angle != 0.) {
+      G4cout << "LCDDetectorConstructor:: Using DID field map "
+	     << Setup::Nominal_Field_value << " [T]" << G4endl;
+      LCFieldX14* myField = new LCFieldX14( Setup::DID_FIELD_MAP); // anti-DID field map for 14mr 
       fieldMgr->SetDetectorField(myField);
       fieldMgr->CreateChordFinder(myField);
-              }else{
-      G4cout << "LCDDetectorConstructor:: Using DID field map "<<G4endl;
-          LCFieldX14* myField = new LCFieldX14(DID_FIELD_DATA); // anti-DID field map for 14mr 
-         fieldMgr->SetDetectorField(myField);
-         fieldMgr->CreateChordFinder(myField);
-       }
+    }else{
+      G4cout << "LCDDetectorConstructor:: Using Solenoid field map "
+	     << Setup::Nominal_Field_value << " [T]" << G4endl;
+      LCField* myField = new LCField();
+      fieldMgr->SetDetectorField(myField);
+      fieldMgr->CreateChordFinder(myField);
+    }
     fieldIsInitialized = true;
   }
 	 G4cout<< "             Field done. " << G4endl;
@@ -1533,21 +1536,30 @@ void LCDetectorConstruction::Print()
     printf ("%s %6.1f %s \n"," |                sector width : ",dphi,"   [deg]     |"); 
     printf ("%s %8.3f %s \n"," |           sensor z distance : ",SensDZ," [mm]      |"); 
     printf ("%s %8.3f %s \n"," | gap between absorber plates : ",Setup::Lcal_absorber_gap," [mm]      |");
-    printf ("%s %8.3f %s \n"," |                     air gap : ",Setup::Lcal_layer_gap," [mm]      |"); 
     printf ("%s %8.3f %s \n"," |                    tile gap : ",tile_gap," [mm]      |"); 
     printf ("%s %8.3f %s \n"," |           layers phi offset : ",Setup::Lcal_layers_phi_offset / deg," [deg]     |"); 
     printf ("%s\n"," |                                                    |");
     printf ("%s %8.3f %s \n"," |          F-E chip thickness : ",2.*FEChip_hDZ," [mm]      |");
+    double LayerRadLen = 2.*Setup::Lcal_tungsten_hdz / Setup::Tungsten186->GetRadlen()
+      + 2.*Setup::Lcal_fanoutB_hdz / Setup::FanoutMatB->GetRadlen()
+      + 2.*Setup::Lcal_silicon_hdz / Setup::Silicon->GetRadlen()
+      + Setup::Lcal_pad_metal_thickness / Setup::Alu->GetRadlen()
+      + 2.*Setup::Lcal_fanoutF_hdz / Setup::FanoutMatF->GetRadlen()
+      + 2.*Setup::Lcal_layer_gap / Setup::Air->GetRadlen();
+    printf ("%s %8.3f %s \n"," |                     air gap : ",Setup::Lcal_layer_gap," [mm]      |"); 
     if ( Setup::Lcal_FEChip_rmin < Setup::Lcal_SensRadMax ) {
     printf ("%s %8.3f %s \n"," |   PCB interconnection plate : ",Setup::Lcal_PCB_thickness," [mm]      |");
-    }else{
-    printf ("%s %8.3f %s \n"," |      FANOUT front thickness : ",2.*hFanoutFrontDZ," [mm]      |"); 
-    printf ("%s %8.3f %s \n"," |             back  thickness : ",2.*hFanoutBackDZ," [mm]      |"); 
-    }
-    printf ("%s %8.3f %s \n"," |       Si   sensor thickness : ",2.*hSiliconDZ," [mm]      |"); 
     printf ("%s %8.3f %s \n"," |  Pad metalization thickness : ",2.*hMetalDZ," [mm]      |"); 
+    printf ("%s %8.3f %s \n"," |       Si   sensor thickness : ",2.*hSiliconDZ," [mm]      |"); 
+   }else{
+    printf ("%s %8.3f %s \n"," |      fanout front thickness : ",2.*hFanoutFrontDZ," [mm]      |"); 
+    printf ("%s %8.3f %s \n"," |  Pad metalization thickness : ",2.*hMetalDZ," [mm]      |"); 
+    printf ("%s %8.3f %s \n"," |       Si   sensor thickness : ",2.*hSiliconDZ," [mm]      |"); 
+    printf ("%s %8.3f %s \n"," |      fanout back  thickness : ",2.*hFanoutBackDZ," [mm]      |"); 
+    }
     printf ("%s %8.3f %s \n"," |          Tungsten thickness : ",2.*hTungstenDZ," [mm]      |"); 
     printf ("%s %8.3f %s \n"," |       total plane thickness : ",2.*hLayerDZ," [mm]      |"); 
+    printf ("%s %8.3f %s \n"," |      layer radiation length : ",LayerRadLen," [X0]      |"); 
     printf ("%s %8.3f %s \n"," |     mass of the LCAL (1 arm): ",logicWholeLC->GetMass()/kg," [kg]      |"); 
     printf ("%s\n"," |                                                    |");
     printf ("%s %4d %s\n",   " |                use absorber : ",Setup::Lcal_use_absorber,"               |");

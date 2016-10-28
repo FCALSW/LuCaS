@@ -12,15 +12,19 @@
 #  globals
 #-----------------------------------
 GlobalDetectorName      LumiCal_ILD
+PathToFieldMap          ../data/did_field.data
 #RunDescription          bhabha  500GeV (LCal+Field+BeamPipe xing=14)
 #batchMode               1   bhabha.mac 
 #RootFileName            Lucas-bhabha-500GeV.root
 #Beam_Crossing_Angle     14.0
 #--------------
-RunDescription         electrons  50 GeV (LCal+Field+BeamPipe xing=0)
-batchMode              1   ele50.mac 
-RootFileName           Lucas-ele-50GeV.root
-Beam_Crossing_Angle    0.0
+RunDescription          electrons  50 GeV (LCal+Field+BeamPipe xing=0)
+batchMode               1   ele50.mac 
+RootFileName            Lucas-ele-50GeV.root
+Field_Type              Solenoid               // change to "DID" map if desired
+Nominal_field_value     3.5
+Beam_Crossing_Angle     0.0
+PhysicsListName         FTFP_BERT              // default is QGSP_BERT
 #--------------
 #RunDescription          electrons scan  5-500GeV (LCal+Field+BeamPipe xing=0)
 #batchMode               1   single-ele-scan.mac
@@ -88,6 +92,7 @@ Lcal_tungsten_thickness    3.5
 #---
 Lcal_support               0
 Lcal_use_absorber          1  
+Lcal_absorber_density      17.8            // mixture W(0.93)+Ni(0.05)+Cu(0.02)
 Lcal_use_fanout            1
 Lcal_use_FE                1
 #end  
