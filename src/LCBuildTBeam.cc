@@ -6,7 +6,7 @@ LCBuildTBeam::LCBuildTBeam()
 {
   Silicon     = Setup::Silicon;               // Sensor Cell
   Aluminium   = Setup::Alu;                   // material for LCAL mechanical parts
-  Tungsten    = Setup::Wabsorber;             // Absorber plate
+  Tungsten    = Setup::Tungsten186;           // Absorber plate
   FanoutMatF  = Setup::FanoutMatF;            // Front Fanout material
   FanoutMatB  = Setup::FanoutMatB;            // Back Fanout material
   VirtualCell = Setup::Lcal_virtual_cells;                // cell type 

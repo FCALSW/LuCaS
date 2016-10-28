@@ -81,20 +81,20 @@ void LCRunAction::Print(G4String now, const G4Run* Run)
       G4cout << "|                     Begin of Run  : "<< Setup::RunNumber << G4endl;
       G4cout << "|                         time now  : "<< ctime(&tnow) ;
       G4cout << "|                      Random Seed  : "<< Setup::StartRandomSeed << G4endl;
+      G4cout << "|                        SetupFile  : "<< Setup::SetupFile << G4endl;
       G4cout << "| Global Parameters for the Run are : "           <<G4endl;
       G4cout << "---------------------------------------------------------------------"<<G4endl;
       G4cout << "|                   batchMode:  "<< Setup::batchMode << G4endl;
       G4cout << "|                   macroName:  "<< Setup::macroName << G4endl;
       G4cout << "|                  PrintLevel:  "<< Setup::PrintLevel << G4endl;
       G4cout << "|           Logging frequency:  "<< Setup::LogFreq << G4endl;
-      G4cout << "|             PhysicsListName:  "<< Setup::PhysicsListName << G4endl;
       if ( Setup::batchMode ) {
 	G4cout << "|       ROOT output file name:  "<< Setup::RootFileName << G4endl;
 	G4cout << "|       ROOT output open mode:  "<< Setup::RootFileMode << G4endl;
 	G4cout << "|           accumulate events:  "<< YesNo[Setup::AccumulateEvents] << G4endl;
       }
-      G4cout << "|                   SetupFile:  "<< Setup::SetupFile << G4endl;
       G4cout << "|         Beam_Crossing_Angle:  "<< Setup::Beam_Crossing_Angle / mrad << " [mrad]" << G4endl;
+      G4cout << "|                  Field Type:  "<< Setup::Field_Type << G4endl;
       G4cout << "|         Nominal field value:  "<< Setup::Nominal_Field_value / tesla << " [T]"<< G4endl;
       G4cout << "|          Particle generator:  "<< Setup::Particle_Generator<< G4endl;
       G4cout << "| Number of events to process:  "<< Setup::NoOfEventsToProcess << G4endl;
@@ -104,6 +104,7 @@ void LCRunAction::Print(G4String now, const G4Run* Run)
       G4cout << "|                       LHCAL:  "<< Setup:: Build_LHcal << G4endl;
       G4cout << "|                        BCAL:  "<< Setup:: Build_BCal << G4endl;
       G4cout << "|                        MASK:  "<< Setup:: Build_Mask << G4endl;
+      G4cout << "|             PhysicsListName:  "<< Setup::PhysicsListName << G4endl;
       G4cout << "|                    rangeCut:  "<< Setup::rangeCut/ mm << " [mm]"<<G4endl;
       G4cout << "|   Region Production Cuts:     "<< G4endl;
       G4cout << "|                        LCAL:  "<<  Setup::LCal_Region_Cut / mm <<" [mm]"<< G4endl;

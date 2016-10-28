@@ -55,6 +55,8 @@ public:
   static G4double rangeCut;
   static G4double Beam_Crossing_Angle;
   static G4double lorentzTransAngle;
+  static G4String Field_Type;
+  static G4String DID_FIELD_MAP;
   static G4double Nominal_Field_value;
   static G4String Particle_Generator; 
   static G4int    NoOfEventsToProcess;
@@ -176,6 +178,7 @@ public:
   static G4Material *Silicon;  
   static G4Material *Alu;  
   static G4Material *Tungsten;  
+  static G4Material *Nikiel;  
   static G4Material *Copper;  
   static G4Material *Iron;  
   static G4Material *Beryllium;  
@@ -185,7 +188,7 @@ public:
   static G4Material *FanoutMatF;  
   static G4Material *FanoutMatB;
   static G4Material *FR4;
-  static G4Material *Wabsorber;
+  static G4Material *Tungsten186;
 
 private:
 

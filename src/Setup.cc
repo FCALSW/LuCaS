@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: Setup.cc 324 2016-09-16 17:36:50Z bogdan.pawlik@ifj.edu.pl $
  * class to setup initial parameters for Lcal geometry,
  * materials, and I/O.
  * 13/05/2009 initial version b.p.
@@ -52,6 +52,8 @@ G4String Setup::SetupFile = "";
 G4double Setup::rangeCut = 0.005 *mm;
 G4double Setup::Beam_Crossing_Angle = 0. *mrad;
 G4double Setup::lorentzTransAngle = Beam_Crossing_Angle / 2.;
+G4String Setup::Field_Type = "Solenoid";
+G4String Setup::DID_FIELD_MAP = "";
 G4double Setup::Nominal_Field_value = 3.5 *tesla;
 G4String Setup::Particle_Generator = "";
 G4int    Setup::NoOfEventsToProcess=0;
@@ -109,7 +111,7 @@ G4double Setup::Lcal_layer_gap          = 0.2  *mm;
 G4double Setup::Lcal_silicon_thickness  = 0.32 *mm;
 G4double Setup::Lcal_pad_metal_thickness= 0.02 *mm;
 G4double Setup::Lcal_tungsten_thickness = 3.5  *mm;
-G4double Setup::Lcal_absorber_density   =19.3 *g/cm3;
+G4double Setup::Lcal_absorber_density   = 17.8 *g/cm3;
 
 G4double Setup::Lcal_ChipCaveDepth =   2.6  *mm;
 G4double Setup::Lcal_FEChip_space  =   0.5  *mm;
@@ -162,6 +164,7 @@ G4int    Setup::Lcal_VisAbsSolid  = 0;
  G4Material* Setup::Alu = NULL;  
  G4Material* Setup::Silicon = NULL;  
  G4Material* Setup::Tungsten = NULL;  
+ G4Material* Setup::Nikiel = NULL;  
  G4Material* Setup::Iron = NULL;  
  G4Material* Setup::Copper = NULL;  
  G4Material* Setup::Beryllium = NULL;  
@@ -171,7 +174,7 @@ G4int    Setup::Lcal_VisAbsSolid  = 0;
  G4Material* Setup::FanoutMatF = NULL;  
  G4Material* Setup::FanoutMatB = NULL; 
  G4Material* Setup::FR4 = NULL; 
- G4Material* Setup::Wabsorber=NULL;
+ G4Material* Setup::Tungsten186=NULL;
 //---------------------------------------------------------
 
 Setup* Setup::GetSetup()
@@ -302,6 +305,8 @@ void Setup::SetBaseParameters()
 	else if ( !strcmp(parName,"StepSizeMin") )     sscanf( aLine,"%s %lf", sDum, &(Setup::StepSizeMin)); 
 	else if ( !strcmp(parName,"PrintLevel") )  G4cout << " parameter PrintLevel in Setup file ignored "<< G4endl; 
 	else if ( !strcmp(parName,"PhysicsListName") ) {sscanf( aLine,"%s %s", sDum, sDum); Setup::PhysicsListName = sDum;} 
+	else if ( !strcmp(parName,"Field_Type") ) { sscanf( aLine,"%s %s", sDum, sDum );  Setup::Field_Type = sDum; }
+	else if ( !strcmp(parName,"PathToFieldMap") ) { sscanf( aLine,"%s %s", sDum, sDum );  Setup::DID_FIELD_MAP = sDum; }
 	else if ( !strcmp(parName,"RootFileName") ) { if( Setup::RootFileName == ""){
 	                                                 sscanf( aLine,"%s %s", sDum, sDum );  Setup::RootFileName = sDum;}}
 	else if ( !strcmp(parName,"RootFileMode") )    {if( Setup::RootFileMode == ""){
@@ -465,6 +470,7 @@ void Setup::AddMaterials()
     // Get materials from the Geant4 database
     Setup::Silicon     = materials->FindOrBuildMaterial("G4_Si");
     Setup::Tungsten    = materials->FindOrBuildMaterial("G4_W");
+    Setup::Nikiel      = materials->FindOrBuildMaterial("G4_Ni");
     Setup::Iron        = materials->FindOrBuildMaterial("G4_Fe");
     Setup::Copper      = materials->FindOrBuildMaterial("G4_Cu");
     Setup::Alu         = materials->FindOrBuildMaterial("G4_Al");
@@ -502,10 +508,10 @@ void Setup::AddMaterials()
 	G4Element* Ni = new G4Element("Nickel",symbol="Ni", z=28, a=58.69348*g/mole);
 
    // material for absorber
-	Setup::Wabsorber = new G4Material("Wabsorber",Setup::Lcal_absorber_density, ncomponents=3);
-	Setup::Wabsorber->AddMaterial(Setup::Tungsten, fractionmass=93.0*perCent);
-	Setup::Wabsorber->AddElement(Ni, fractionmass=5.25*perCent);
-	Setup::Wabsorber->AddMaterial(Setup::Copper, fractionmass=1.75*perCent);
+	Setup::Tungsten186 = new G4Material("Tungsten186",Setup::Lcal_absorber_density, ncomponents=3);
+	Setup::Tungsten186->AddMaterial(Setup::Tungsten, fractionmass=93.0*perCent);
+	Setup::Tungsten186->AddElement(Ni, fractionmass=5.25*perCent);
+	Setup::Tungsten186->AddMaterial(Setup::Copper, fractionmass=1.75*perCent);
 
 
 

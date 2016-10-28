@@ -147,9 +147,6 @@ if( GEANT4_CONFIG_DEBUG )
     message( STATUS " ************** GEANT4_LIBRARIES  ${GEANT4_LIBRARIES}")
 endif()
 
-
-if ( LUCAS_ROOT_DICTIONARY )
-endif()
 #----------------------------------------------------------------------------
 # Generate dictionaries, add ROOT libraries properties
 #
